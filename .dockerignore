@@ -1,0 +1,13 @@
+.git
+.github
+.codex
+.claude
+.portfolio
+openspec
+sdd
+__pycache__
+*.py[cod]
+.pytest_cache
+.ruff_cache
+.coverage
+benchmarks/results/*.json

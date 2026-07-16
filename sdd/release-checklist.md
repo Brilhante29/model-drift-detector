@@ -1,0 +1,26 @@
+# Release Checklist: model-drift-detector
+
+- [x] Problem, users, claim boundary, inputs, outputs, and exclusions are specified.
+- [x] OpenSpec proposal, design, requirements, tasks, and self-challenge exist.
+- [x] Architecture and technical records include rejected alternatives.
+- [x] SOLID, LSP, DIP, KISS, YAGNI, DRY, coupling, and testability are concrete.
+- [x] Monitoring-batch manifest verifies path, bytes, SHA-256, schema, rows, and values before use.
+- [x] Scenario truth is independent from detector inputs and preserves a known blind spot.
+- [x] Host tests and both supported Python syntax checks pass.
+- [x] Default path is local-first, cross-platform, secret-free, and Docker-based.
+- [x] Python base tag and OCI digest are recorded.
+- [x] Reuse-kit contract, skill, docs, component pack, installer, and validator patches pass kit validation.
+- [x] Add and validate explicit monitoring-batch declaration semantics in the kit.
+- [ ] Build the exact Docker image and record ID/size.
+- [ ] Freeze transitive dependencies from the successful image.
+- [ ] Run Ruff, all tests, and at least 90% focused coverage inside the image.
+- [ ] Run tamper, validate, detect, and Prometheus integration checks in Docker.
+- [ ] Preserve three full 2,000-row benchmark outputs with failures.
+- [ ] Aggregate median/range and validate the summary schema.
+- [ ] README opening, committed summary, and `evidence_status: current` agree.
+- [ ] Strict project validator passes without `-AllowPendingEvidence`.
+- [ ] Kit improvements are published and synchronized by exact commit.
+- [ ] Git status contains only intentional files and no runtime caches.
+- [ ] Desktop repository receives the staged implementation.
+- [ ] Public repository metadata, topics, default branch, and description are set.
+- [ ] GitHub Actions is green and benchmark evidence is downloadable.

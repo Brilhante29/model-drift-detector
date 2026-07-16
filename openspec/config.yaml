@@ -2,33 +2,29 @@ schema: portfolio-system
 references:
   - portfolio-reuse-kit
 context: |
-  Project: model-drift-detector (#unknown)
+  Project: model-drift-detector (#22)
+  Program: mlops-data-platform
+  Claim: verify immutable monitoring batches and score auditable data/prediction drift alarms.
+  Upstream system role: mlops-end2end (#21) owns training, registry, promotion, and serving.
   Source of truth:
-    - Use `.portfolio/` as the local snapshot of portfolio-reuse-kit.
-    - Use `project.yaml` for the public project contract.
-    - Use `sdd/` for lightweight artifacts that must exist even without OpenSpec installed.
-  Core rules:
-    - Prove one measurable claim.
-    - Select one component pack from `.portfolio/component-packs/manifest.yaml`.
-    - Record architecture, stack, API, messaging, cloud, database/runtime, and library choices with rejected alternatives.
-    - Keep domain/use-case code independent from framework, database, broker, cloud SDK, transport, and UI.
-    - Prefer local-first execution; use Kumo for AWS-like behavior and adapters for real cloud.
-    - Resolve reuse improvements as patch-now, backlog, or reject.
+    - Use .portfolio/ as the synchronized reuse-kit snapshot.
+    - Use project.yaml for the public project contract.
+    - Use sdd/ for accepted decisions and release gates.
+    - Use openspec/changes/ship-model-drift-detector for the active change.
 rules:
-  reference-reuse:
-    - Prioritize local skills and `.portfolio/`; use external repositories only as attributed references unless a decision record explicitly accepts deeper reuse.
   intent:
-    - Keep the claim measurable and README-ready.
+    - Distinguish data and prediction drift proxies from model-performance drift requiring labels.
   portfolio-impact:
-    - Explain how this repo strengthens a macro project, not just itself.
+    - Connect through the monitoring-batch contract; never import upstream application code.
   architecture-record:
-    - Include SOLID, LSP, KISS, YAGNI, dependency inversion, and testability evidence.
+    - Challenge significance-only alarms, hidden framework defaults, and ceremonial ports.
+    - Reject service, broker, orchestrator, cloud, and retraining abstractions without a measured force.
   component-pack:
-    - Select from `.portfolio/component-packs/manifest.yaml`.
-    - Do not install external tools without explicit approval.
+    - Use mlops-data-platform, python-model-monitoring, and benchmark-harness guidance.
   reuse-delta:
-    - Record whether the kit improved because of this project.
+    - Patch cross-project contract and governance gaps into the kit; keep detector thresholds and fixtures local.
   benchmark-proof:
-    - Include metric, unit, command, fixture, JSON path, and README result.
+    - Preserve labeled stable/shift scenarios, confusion counts, F1, FPR, timing, thresholds, blind spots, environment, and failures.
+    - Keep evidence pending or invalidated until the immutable Docker runs and README agree.
   verification:
-    - Verify Docker, tests, benchmark JSON, README, references, reuse review, and validation.
+    - Verify artifact tamper rejection, Holm and effect policy, detector/telemetry substitution, bounded metrics, Docker, raw JSON, summary, and CI.

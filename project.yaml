@@ -1,0 +1,157 @@
+id: 22
+name: model-drift-detector
+program:
+  id: mlops-data-platform
+  narrative_fit: "Guards the model lifecycle from #21 after deployment by turning immutable feature and prediction batches into auditable drift alarms and labeled benchmark evidence."
+  shared_assets:
+    - versioned tabular monitoring-batch manifest
+    - deterministic stable and drift scenario matrix
+    - framework-independent alarm policy
+    - Prometheus monitoring metrics
+    - drift benchmark result schema
+status: implemented
+claim: "One local-first Docker command verifies immutable monitoring batches, detects univariate data and prediction drift with Holm-corrected KS evidence plus a minimum effect, and scores alarm F1 and false positives on deterministic labeled scenarios."
+stack:
+  - python-3.12
+  - numpy-2.5.1
+  - scipy-1.18.0
+  - pydantic-2.13.4
+  - prometheus-client-0.25.0
+  - docker
+language_profile:
+  primary: python
+  secondary: []
+  reason: "Python supplies the scientific statistics and monitoring ecosystem while typed domain policy and artifact boundaries keep the proof independent from any orchestration or reporting framework."
+decision_brain:
+  agentic_spec:
+    source: .portfolio/decision-brain/agentic-spec-governance.yaml
+    spec_store: portfolio-reuse-kit
+    schema: portfolio-system
+    project_config: openspec/config.yaml
+    component_pack: mlops-data-platform
+    artifact_graph:
+      - intent->portfolio-impact->architecture-record
+      - architecture-record+portfolio-impact->component-pack
+      - component-pack->reuse-delta->benchmark-proof->tasks->verification
+  agent_graph:
+    mode: principal-agent-orchestrated
+    source: .portfolio/decision-brain/agent-graph.yaml
+    handoff: sdd/agent-handoff.md
+    local_first_runtime: docker
+  reuse_improvement_loop:
+    source: .portfolio/decision-brain/reuse-improvement-loop.yaml
+    review_path: sdd/reuse-improvement-review.md
+    current_status: patched-awaiting-runtime-validation
+  principles:
+    coupling_rule: "Alarm policy imports no SciPy, Evidently, Prometheus, Airflow, MLflow, cloud SDK, transport, database, or UI code; adapters depend inward on immutable domain values and narrow protocols."
+    solid: [srp, ocp, lsp, isp, dip]
+    simplicity_rule: "Use one statistical method, one correction, one explicit policy, one artifact contract, and one scenario harness; exclude online services and retraining until a measured requirement exists."
+    testability_rule: "The policy accepts precomputed column evidence, the application accepts detector and telemetry substitutes, and artifact and SciPy adapters are tested independently."
+    rejected_overengineering:
+      - FastAPI or GraphQL service
+      - Airflow or MLflow duplication
+      - Kafka or RabbitMQ
+      - automatic retraining
+      - microservices or Kubernetes
+      - cloud monitoring control plane
+      - dashboard bundled into the detector
+  stack_profile: python-ml
+  api_style: cli
+  messaging: none
+  cloud:
+    mode: none
+    local_provider: none
+    real_provider_target: none
+    emulated_services: []
+    adapter_rule: "No cloud behavior exists in the measured path; if object storage or managed monitoring enters later, define a port and verify AWS behavior against Kumo first."
+    config_switch: not-applicable
+    unsupported_behaviors:
+      - managed alert routing
+      - hosted dashboards
+      - cloud object storage
+  database: none
+  runtime: "Single non-root Python 3.12.13 container pinned by OCI digest; CPU-only deterministic benchmark with no network or credentials at runtime."
+  library_policy: "NumPy generates deterministic fixtures, SciPy supplies the reviewed two-sample KS implementation, Pydantic rejects malformed manifests, and Prometheus exports bounded operational metrics. Evidently remains an optional comparison adapter because its defaults must not own the claim."
+  record_path: sdd/technical-decision.md
+  rejected_options:
+    - option: Evidently as the core decision engine
+      reason: "Its broad reporting surface and automatic method defaults would obscure the exact statistical evidence, effect threshold, and correction that the benchmark claims."
+    - option: FastAPI or GraphQL
+      reason: "The measurable unit is a reference/current batch comparison, so a file-oriented CLI has fewer operational variables and proves the contract directly."
+    - option: Kafka or RabbitMQ
+      reason: "The benchmark is bounded batch evaluation with no stream, fan-out, durability, or asynchronous throughput requirement."
+    - option: Kumo or real cloud
+      reason: "No AWS behavior exists in the acceptance criteria; emulation would add infrastructure without increasing proof."
+architecture:
+  style: pipeline
+  reason: "The dominant force is an ordered evidence flow: verify artifacts, parse batches, compute statistics, correct hypotheses, apply alarm policy, emit telemetry, and score decisions."
+  problem_forces:
+    domain_complexity: medium
+    integration_pressure: medium
+    ui_state_complexity: none
+    data_or_ml_reproducibility: high
+    auditability: high
+    throughput_or_async: low
+    independent_deployability: low
+  dependency_rule: "Artifact, SciPy, telemetry, and CLI adapters depend on domain values and application protocols; the domain never depends on an external framework."
+  boundaries:
+    - immutable monitoring-batch artifact and integrity verification
+    - numeric batch domain values
+    - SciPy two-sample KS adapter
+    - Holm correction and alarm policy
+    - Prometheus telemetry adapter
+    - deterministic scenario and benchmark orchestration
+    - file-oriented CLI
+  rejected_alternatives:
+    - style: layered-mvc
+      reason: "There is no interactive controller or persistence model; MVC layers would hide the sequential evidence transformations."
+    - style: hexagonal-as-primary
+      reason: "Ports protect two replaceable edges, but the dominant system shape is still an ordered data pipeline."
+    - style: event-driven
+      reason: "No event stream, independent consumer, retry queue, or delivery guarantee is required by the claim."
+design_system:
+  tokens: .portfolio/design-system/tokens.yaml
+  readme_components:
+    - readme_header
+    - benchmark_card
+    - architecture_card
+    - references_table
+  diagram_required: true
+reuse:
+  kit_version: model-monitoring-update-pending-publication
+  uses:
+    - catalog
+    - programs
+    - component-packs
+    - openspec-schema
+    - decision-brain
+    - agent-graph
+    - reuse-improvement-loop
+    - architecture-selector
+    - python-language-profile
+    - python-model-monitoring
+    - benchmark-contract
+    - monitoring-batch-contract
+    - design-system
+    - sdd
+    - skills
+monitoring_batch:
+  role: consumer
+  schema_version: 1
+  contract_path: .portfolio/contracts/monitoring-batch.schema.json
+  manifest_name: monitoring-batch.manifest.json
+  supported_format: csv
+  integrity: sha256-before-parse
+  path_policy: manifest-directory-only
+  runtime_network_required: false
+benchmark:
+  primary_metric: drift_alarm_f1
+  unit: ratio
+  command: "docker run --rm model-drift-detector"
+  result_path: benchmarks/results/summary.json
+  evidence_status: pending
+release:
+  docker: "docker run --rm model-drift-detector"
+  no_secret_default_path: true
+  readme_has_number: true
+  references_documented: true
