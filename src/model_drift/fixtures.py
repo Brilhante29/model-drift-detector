@@ -12,7 +12,6 @@ import numpy as np
 
 from model_drift.domain import MonitoringBatch
 
-
 FEATURE_COUNT = 8
 
 

@@ -3,11 +3,10 @@ from __future__ import annotations
 import argparse
 import json
 from copy import deepcopy
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from statistics import median
 from typing import Any
-
 
 AGGREGATED_METRICS = (
     "precision",
@@ -53,7 +52,7 @@ def aggregate(paths: list[Path], output: Path) -> dict[str, Any]:
         raise ValueError("all runs must contain the same non-empty scenario matrix")
 
     result = deepcopy(loaded[0])
-    result["timestamp"] = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    result["timestamp"] = datetime.now(UTC).isoformat().replace("+00:00", "Z")
     result["value"] = median(float(item["value"]) for item in loaded)
     result["repeat"] = len(loaded)
     result["results"] = [path.as_posix() for path in paths]

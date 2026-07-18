@@ -1,7 +1,6 @@
 import ast
 from pathlib import Path
 
-
 FORBIDDEN_DOMAIN_IMPORTS = {
     "scipy",
     "numpy",

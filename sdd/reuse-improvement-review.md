@@ -54,4 +54,4 @@ These are implementation choices for #22, not universal portfolio defaults.
 
 ## Verdict
 
-The implementation-stage reuse review is `patch-required-and-applied` for the artifact, skills, docs, and component pack. Project declaration validation is now included and kit-validated. Runtime validation remains pending because Docker is unavailable.
+The implementation-stage reuse review is `patch-required-and-applied` for the artifact, skills, docs, and component pack. Project declaration validation is included and kit-validated. Runtime validation passed in three Docker runs on one immutable image; the aggregate is committed under `benchmarks/results/summary.json`.

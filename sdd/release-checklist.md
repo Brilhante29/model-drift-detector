@@ -11,14 +11,14 @@
 - [x] Python base tag and OCI digest are recorded.
 - [x] Reuse-kit contract, skill, docs, component pack, installer, and validator patches pass kit validation.
 - [x] Add and validate explicit monitoring-batch declaration semantics in the kit.
-- [ ] Build the exact Docker image and record ID/size.
+- [x] Build the exact Docker image and record ID/size.
 - [ ] Freeze transitive dependencies from the successful image.
-- [ ] Run Ruff, all tests, and at least 90% focused coverage inside the image.
+- [x] Run Ruff, all tests, and at least 90% focused coverage inside the image.
 - [ ] Run tamper, validate, detect, and Prometheus integration checks in Docker.
-- [ ] Preserve three full 2,000-row benchmark outputs with failures.
-- [ ] Aggregate median/range and validate the summary schema.
-- [ ] README opening, committed summary, and `evidence_status: current` agree.
-- [ ] Strict project validator passes without `-AllowPendingEvidence`.
+- [x] Preserve three full 2,000-row benchmark outputs with failures.
+- [x] Aggregate median/range and validate the summary schema.
+- [x] README opening, committed summary, and `evidence_status: current` agree.
+- [x] Strict project validator passes without `-AllowPendingEvidence`.
 - [ ] Kit improvements are published and synchronized by exact commit.
 - [ ] Git status contains only intentional files and no runtime caches.
 - [ ] Desktop repository receives the staged implementation.

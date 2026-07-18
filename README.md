@@ -1,6 +1,6 @@
 # #22 model-drift-detector
 
-**Benchmark:** `drift_alarm_f1` is pending the immutable Docker run; no local preview number is presented as publication evidence.
+**Benchmark:** `drift_alarm_f1 = 1.00` (median of 3 Docker runs; image `sha256:bbd8358f30c9959cb349952b1d42c68a2ae96c7b16bb6d31807c9ac162a11f1c`).
 
 **Proves:** an auditable post-deployment monitor can reject tampered batches, distinguish data and prediction drift from model-performance claims, control multiple tests, and score its alarm policy against deterministic scenario truth.
 
@@ -17,12 +17,12 @@ The default command needs no network, secret, paid API, database, broker, or clo
 
 | Metric | Value | Unit | Meaning |
 |---|---:|---|---|
-| Alarm F1 | pending | ratio | balance of alarm precision and recall |
-| False-positive rate | pending | ratio | stable scenarios incorrectly alarmed |
-| Detection p95 | pending | ms | statistical comparison plus policy |
-| Blind-spot detection | pending | ratio | correlation-only scenarios, outside the supported univariate claim |
+| Alarm F1 | 1.00 | ratio | median across 3 pinned-image runs |
+| False-positive rate | 0.00 | ratio | stable scenarios incorrectly alarmed |
+| Detection p95 | 45.28 | ms | median comparison and policy tail |
+| Blind-spot detection | 0.00 | ratio | documented univariate correlation-only blind spot |
 
-Publication requires three complete Docker runs on one pinned image, all raw results, the median summary, image ID, environment, and zero hidden failures.
+Publication evidence is complete: three Docker runs share one immutable image, preserve raw results, aggregate median/min/max, record environment and image ID, and report zero failures. Raw runs are under `benchmarks/results/run-{1,2,3}/`.
 
 ## What It Monitors
 
@@ -89,7 +89,7 @@ The architecture is a pipeline because ordered evidence transformations dominate
 - Statistical, artifact, policy, telemetry, fixture, and CLI behavior have focused tests.
 - Docker uses a non-root user and a Python base pinned by tag and OCI digest.
 - OpenSpec records intent, architecture self-challenge, reuse delta, benchmark questions, and release verification.
-- Benchmark evidence is explicitly `pending` until the final container and protocol are frozen.
+- Benchmark evidence is `current`: three 2,000-row Docker runs use the final immutable image, and the committed aggregate preserves their raw results.
 
 ## Local Development
 

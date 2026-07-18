@@ -11,7 +11,6 @@ from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 from model_drift.domain import MONITORED_ROLES, MonitoringBatch
 
-
 MAX_MANIFEST_BYTES = 1024 * 1024
 MAX_DATA_BYTES = 64 * 1024 * 1024
 MAX_ROWS = 1_000_000

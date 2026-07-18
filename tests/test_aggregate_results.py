@@ -1,10 +1,8 @@
 import copy
 import json
 import runpy
-from pathlib import Path
 
 import pytest
-
 
 MODULE = runpy.run_path("tools/aggregate_results.py")
 aggregate = MODULE["aggregate"]

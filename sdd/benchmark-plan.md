@@ -8,7 +8,7 @@ For the fixed supported scenario matrix, the explicit KS + Holm + effect policy 
 
 - Name: `drift_alarm_f1`
 - Unit: ratio
-- Public result: pending immutable Docker evidence
+- Public result: `drift_alarm_f1 = 1.00`, median of three immutable Docker runs
 - Command: `docker run --rm model-drift-detector`
 - Result: `benchmarks/results/summary.json`
 

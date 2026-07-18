@@ -4,9 +4,9 @@ import argparse
 import json
 import os
 import sys
-from datetime import datetime, timezone
+from collections.abc import Sequence
+from datetime import UTC, datetime
 from pathlib import Path
-from typing import Sequence
 
 from model_drift.application import DriftMonitor
 from model_drift.artifact import load_monitoring_batch
@@ -105,7 +105,7 @@ def main() -> int:
     except Exception as error:
         failure = {
             "project": "model-drift-detector",
-            "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+            "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
             "error_type": type(error).__name__,
             "error": str(error),
         }

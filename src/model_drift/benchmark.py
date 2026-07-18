@@ -3,9 +3,8 @@ from __future__ import annotations
 import json
 import os
 import platform
-import sys
 import tempfile
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -130,7 +129,7 @@ def run_benchmark(
         "metric": "drift_alarm_f1",
         "value": f1,
         "unit": "ratio",
-        "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "command": command,
         "repeat": len(scored),
         "environment": {
