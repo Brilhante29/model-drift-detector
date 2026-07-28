@@ -13,7 +13,7 @@ known portfolio risk.
 
 ## Scope
 
-- In scope: <scope>
+- In scope: Statistical data and prediction drift detection using KS tests and alarm evaluation.
 - Out of scope: paid credentials, unrelated infrastructure, and unmeasured features.
 
 ## Portfolio Impact
