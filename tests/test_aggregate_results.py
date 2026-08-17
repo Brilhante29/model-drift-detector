@@ -35,7 +35,13 @@ def raw_result(image_id="sha256:image", f1=1.0):
         "environment": {"image_id": image_id},
         "summary": copy.deepcopy(metrics),
         "metrics": metrics,
-        "proof": {"scenario_matrix": matrix},
+        "proof": {
+            "scenario_matrix": matrix,
+            "benchmark_signature": {
+                "rows_per_batch": 2000,
+                "fixture_digest": "sha256:" + "1" * 64,
+            },
+        },
         "failures": 0,
     }
 
@@ -57,6 +63,7 @@ def test_aggregate_requires_three_same_image_runs_and_preserves_samples(tmp_path
     assert result["metrics"]["f1"]["samples"] == [0.8, 1.0, 0.9]
     assert result["proof"]["all_failures_preserved"] is True
     assert result["repeat"] == 3
+    assert result["results"] == ["run-1.json", "run-2.json", "run-3.json"]
 
 
 def test_aggregate_rejects_missing_runs_image_or_failures(tmp_path):

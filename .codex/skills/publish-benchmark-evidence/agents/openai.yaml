@@ -1,0 +1,4 @@
+interface:
+  display_name: "Publish Benchmark Evidence"
+  short_description: "Create truthful V2 benchmark proof"
+  default_prompt: "Use $publish-benchmark-evidence to generate and validate reproducible benchmark evidence for this portfolio repository."

@@ -1,0 +1,96 @@
+{
+    "id":  7,
+    "name":  "vision-serving-fastapi-legacy",
+    "program":  {
+                    "id":  "applied-computer-vision",
+                    "narrative_fit":  "Provides a measurable HTTP serving boundary for computer vision models.",
+                    "shared_assets":  [
+                                          "benchmark contract"
+                                      ]
+                },
+    "status":  "implemented",
+    "claim":  "Proves measured HTTP model-serving throughput and latency.",
+    "stack":  [
+
+              ],
+    "language_profile":  {
+                             "primary":  "fastapi-backend",
+                             "secondary":  [
+
+                                           ],
+                             "reason":  "Python and FastAPI own the model serving boundary."
+                         },
+    "decision_brain":  {
+                           "principles":  {
+                                              "coupling_rule":  "Application inference ports do not import FastAPI, model runtime, or storage types.",
+                                              "solid":  [
+                                                            "srp"
+                                                        ],
+                                              "simplicity_rule":  "Do not add infrastructure outside the measured claim.",
+                                              "testability_rule":  "The inference use case runs with an in-memory model adapter.",
+                                              "rejected_overengineering":  [
+                                                                               "spring",
+                                                                               "microservices"
+                                                                           ]
+                                          },
+                           "stack_profile":  "fastapi-backend",
+                           "api_style":  "rest-http",
+                           "messaging":  "none",
+                           "cloud":  {
+                                         "mode":  "none",
+                                         "local_provider":  "legacy-local-provider",
+                                         "real_provider_target":  "none",
+                                         "emulated_services":  [
+                                                                   "legacy-service"
+                                                               ],
+                                         "adapter_rule":  "No cloud adapter exists because no cloud behavior is claimed.",
+                                         "config_switch":  "none",
+                                         "unsupported_behaviors":  [
+
+                                                                   ]
+                                     },
+                           "database":  "none",
+                           "runtime":  "Python",
+                           "library_policy":  "Use FastAPI at the HTTP edge and keep model runtime libraries behind an adapter.",
+                           "record_path":  "sdd/technical-decision.md",
+                           "rejected_options":  [
+
+                                                ]
+                       },
+    "architecture":  {
+                         "style":  "hexagonal",
+                         "reason":  "Model inference stays behind an HTTP adapter and a measurable application boundary.",
+                         "dependency_rule":  "Infrastructure depends inward on domain contracts.",
+                         "boundaries":  [
+                                            "domain",
+                                            "application",
+                                            "http-adapter",
+                                            "model-adapter",
+                                            "benchmark"
+                                        ],
+                         "rejected_alternatives":  [
+
+                                                   ]
+                     },
+    "design_system":  {
+                          "tokens":  "design-system/tokens.yaml",
+                          "readme_components":  [
+                                                    "readme_header",
+                                                    "benchmark_card"
+                                                ],
+                          "diagram_required":  true
+                      },
+    "benchmark":  {
+                      "primary_metric":  "requests_per_second",
+                      "unit":  "req/s",
+                      "command":  "python -m benchmarks.run",
+                      "result_path":  "benchmarks/results/latest.json",
+                      "evidence_status":  "pending"
+                  },
+    "release":  {
+                    "docker":  "docker build .",
+                    "no_secret_default_path":  true,
+                    "readme_has_number":  true,
+                    "references_documented":  true
+                }
+}

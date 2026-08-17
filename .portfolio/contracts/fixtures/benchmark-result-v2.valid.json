@@ -1,0 +1,46 @@
+{
+  "schema_version": 2,
+  "run_id": "018f13c2-2042-7b8e-a824-14dd14269e6f",
+  "project": "portfolio-evidence-api",
+  "benchmark_id": "evidence-ingestion",
+  "workload": {
+    "version": "1.0.0",
+    "fixture_digest": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "config_digest": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "warmup_iterations": 1,
+    "measured_iterations": 3,
+    "concurrency": 8
+  },
+  "metrics": [{
+    "name": "ingestion_p95_ms",
+    "value": 12.4,
+    "unit": "ms",
+    "direction": "lower_is_better",
+    "samples": [11.8, 12.4, 12.1],
+    "failures": 0,
+    "summary": { "p50": 12.1, "p95": 12.4 }
+  }],
+  "execution": {
+    "command": "docker run portfolio-evidence-api:benchmark",
+    "started_at": "2026-07-21T12:00:00Z",
+    "duration_seconds": 30.5,
+    "exit_code": 0,
+    "repeat": 3
+  },
+  "environment": {
+    "runtime": "node-24",
+    "architecture": "x86_64",
+    "hardware_class": "github-actions-ubuntu-latest"
+  },
+  "provenance": {
+    "source_commit": "0123456789abcdef0123456789abcdef01234567",
+    "clean_tree": true,
+    "image_ref": "ghcr.io/example/portfolio-evidence-api@sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "image_digest": "sha256:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+    "dependency_lock_digest": "sha256:dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+    "producer": "github-actions",
+    "ci_run_url": "https://github.com/example/portfolio-evidence-api/actions/runs/1",
+    "artifact_digest": "sha256:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+  },
+  "comparability_key": "evidence-ingestion:1.0.0:sqlite:x86_64"
+}

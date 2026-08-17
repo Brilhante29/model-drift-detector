@@ -1,0 +1,14 @@
+{
+  "benchmark_id": "holm-ks-drift-scenarios",
+  "concurrency": 1,
+  "feature_count": 8,
+  "minimum_feature_drift_share": 0.125,
+  "minimum_ks_effect": 0.1,
+  "multiple_test_correction": "holm",
+  "repetitions": 3,
+  "rows_per_batch": 2000,
+  "scored_scenarios": 20,
+  "statistical_test": "two-sided-kolmogorov-smirnov",
+  "total_scenarios": 22,
+  "warmup_evaluations": 1
+}

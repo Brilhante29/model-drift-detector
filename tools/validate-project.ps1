@@ -55,13 +55,22 @@ $requiredFiles = @(
   "sdd/architecture-decision.md",
   "sdd/technical-decision.md",
   "sdd/agent-handoff.md",
-  "sdd/reuse-improvement-review.md"
+  "sdd/reuse-improvement-review.md",
+  "constraints.lock",
+  "contracts/monitoring-observation-batch-v1.contract.json",
+  "src/model_drift/contracts/validated-batch-manifest-v1.schema.json",
+  ".portfolio/contracts/validated-batch-manifest-v1.schema.json",
+  ".portfolio/contracts/benchmark-result-v2.schema.json",
+  "benchmarks/workload.json",
+  "tools/benchmark.ps1",
+  "tools/build_v2_evidence.py"
 )
 foreach ($file in $requiredFiles) { Require-File $file }
 
 $manifestPath = Join-Path $root "project.yaml"
 $manifestPrimaryMetric = ""
 $manifestResultPath = ""
+$manifestPublicationResultPath = ""
 $manifestEvidenceStatus = ""
 if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
   $manifestText = Get-Content -Raw -LiteralPath $manifestPath
@@ -95,6 +104,15 @@ if (Test-Path -LiteralPath $manifestPath -PathType Leaf) {
     $manifestResultPath = $resultPathMatch.Groups[1].Value.Trim().Trim('"').Trim("'")
   } else {
     Add-Failure "project.yaml is missing benchmark.result_path"
+  }
+  $publicationResultPathMatch = [regex]::Match(
+    $manifestText,
+    "(?m)^\s+publication_result_path:\s*([^\r\n#]+)"
+  )
+  if ($publicationResultPathMatch.Success) {
+    $manifestPublicationResultPath = $publicationResultPathMatch.Groups[1].Value.Trim().Trim('"').Trim("'")
+  } else {
+    Add-Failure "project.yaml is missing benchmark.publication_result_path"
   }
   $evidenceStatusMatch = [regex]::Match(
     $manifestText,
@@ -138,6 +156,97 @@ if (Test-Path -LiteralPath $reuseReviewPath -PathType Leaf) {
   foreach ($pattern in $requiredFinalGatePatterns) {
     if ($reuseReview -notmatch $pattern) {
       Add-Failure "Reuse improvement review final gate is incomplete: $pattern"
+    }
+  }
+}
+
+$sharedValidatedSchema = Join-Path $root ".portfolio/contracts/validated-batch-manifest-v1.schema.json"
+$packagedValidatedSchema = Join-Path $root "src/model_drift/contracts/validated-batch-manifest-v1.schema.json"
+if (
+  (Test-Path -LiteralPath $sharedValidatedSchema -PathType Leaf) -and
+  (Test-Path -LiteralPath $packagedValidatedSchema -PathType Leaf) -and
+  ((Get-FileHash -Algorithm SHA256 -LiteralPath $sharedValidatedSchema).Hash -ne
+    (Get-FileHash -Algorithm SHA256 -LiteralPath $packagedValidatedSchema).Hash)
+) {
+  Add-Failure "Packaged validated-batch schema differs from the shared contract"
+}
+
+if ($manifestPublicationResultPath -ne "") {
+  $publicationResultPath = Join-Path $root ($manifestPublicationResultPath -replace '/', [IO.Path]::DirectorySeparatorChar)
+  if (-not (Test-Path -LiteralPath $publicationResultPath -PathType Leaf)) {
+    if (-not $AllowPendingEvidence) {
+      Add-Failure "Missing V2 publication result: $manifestPublicationResultPath"
+    }
+  } else {
+    try {
+      $publicationResult = Get-Content -Raw -LiteralPath $publicationResultPath | ConvertFrom-Json
+      $workloadConfigPath = Join-Path $root "benchmarks/workload.json"
+      $workloadConfig = Get-Content -Raw -LiteralPath $workloadConfigPath | ConvertFrom-Json
+      if ($publicationResult.schema_version -ne 2) {
+        Add-Failure "Publication result must use benchmark schema V2"
+      }
+      if ($publicationResult.project -ne "model-drift-detector") {
+        Add-Failure "V2 publication project identity is invalid"
+      }
+      if ($publicationResult.benchmark_id -ne $workloadConfig.benchmark_id) {
+        Add-Failure "V2 benchmark_id must match benchmarks/workload.json"
+      }
+      if ($publicationResult.workload.measured_iterations -ne $workloadConfig.scored_scenarios) {
+        Add-Failure "V2 measured_iterations must match scored scenarios"
+      }
+      if ($publicationResult.workload.warmup_iterations -ne $workloadConfig.warmup_evaluations) {
+        Add-Failure "V2 warmup_iterations must match benchmark warmup"
+      }
+      if ($publicationResult.execution.repeat -ne $workloadConfig.repetitions) {
+        Add-Failure "V2 repeat must match benchmarks/workload.json"
+      }
+      foreach ($metric in @($publicationResult.metrics)) {
+        if (@($metric.samples).Count -ne $publicationResult.execution.repeat) {
+          Add-Failure "V2 metric $($metric.name) must retain one sample per repetition"
+        }
+        if ($metric.failures -ne 0) {
+          Add-Failure "V2 metric $($metric.name) records failures=$($metric.failures)"
+        }
+      }
+      if (@($publicationResult.metrics | Where-Object name -eq $manifestPrimaryMetric).Count -ne 1) {
+        Add-Failure "V2 publication result must contain primary metric $manifestPrimaryMetric exactly once"
+      }
+      if ($publicationResult.provenance.clean_tree -ne $true) {
+        Add-Failure "V2 provenance must record a clean source tree"
+      }
+      $sourceCommit = [string]$publicationResult.provenance.source_commit
+      if ($sourceCommit -notmatch '^[0-9a-f]{40}$') {
+        Add-Failure "V2 source_commit must be an exact Git SHA"
+      } else {
+        & git -C $root cat-file -e "$sourceCommit^{commit}" 2>$null
+        if ($LASTEXITCODE -ne 0) {
+          Add-Failure "V2 source_commit is not present in repository history"
+        } else {
+          & git -C $root merge-base --is-ancestor $sourceCommit HEAD
+          if ($LASTEXITCODE -ne 0) {
+            Add-Failure "V2 source_commit must be an ancestor of HEAD"
+          }
+          & git -C $root diff --quiet $sourceCommit -- constraints.lock benchmarks/workload.json
+          if ($LASTEXITCODE -ne 0) {
+            Add-Failure "Source-locked benchmark inputs changed after evidence generation"
+          }
+        }
+        $global:LASTEXITCODE = 0
+      }
+      foreach ($digestField in @("image_digest", "dependency_lock_digest", "artifact_digest")) {
+        if ([string]$publicationResult.provenance.$digestField -notmatch '^sha256:[0-9a-f]{64}$') {
+          Add-Failure "V2 provenance.$digestField must be a sha256 digest"
+        }
+      }
+      if ([string]$publicationResult.comparability_key -notmatch 'rows-\d+:features-\d+:scenarios-\d+:effect-') {
+        Add-Failure "V2 comparability key must encode the effective drift workload"
+      }
+      $schemaPath = Join-Path $root ".portfolio/contracts/benchmark-result-v2.schema.json"
+      Invoke-Checked "V2 JSON Schema validation" {
+        python -c "import json,sys; from jsonschema import Draft202012Validator,FormatChecker; schema=json.load(open(sys.argv[1],encoding='utf-8')); value=json.load(open(sys.argv[2],encoding='utf-8')); Draft202012Validator(schema,format_checker=FormatChecker()).validate(value)" $schemaPath $publicationResultPath
+      }
+    } catch {
+      Add-Failure "Cannot validate V2 publication result: $($_.Exception.Message)"
     }
   }
 }
@@ -352,12 +461,29 @@ if ($mutableKumo) {
 $dockerfilePath = Join-Path $root "Dockerfile"
 if (Test-Path -LiteralPath $dockerfilePath -PathType Leaf) {
   $dockerfileText = Get-Content -Raw -LiteralPath $dockerfilePath
+  foreach ($literal in @("constraints.lock", "--no-index", "/opt/wheels", "contracts")) {
+    if (-not $dockerfileText.Contains($literal)) {
+      Add-Failure "Dockerfile is missing locked artifact guard: $literal"
+    }
+  }
   $airflowBase = [regex]::Match($dockerfileText, "(?m)^FROM\s+apache/airflow:[^\s]+")
   if ($airflowBase.Success -and $airflowBase.Value -notmatch "@sha256:[a-f0-9]{64}$") {
     Add-Failure "Mutable Airflow base image found; pin a reviewed tag and OCI digest"
   }
   if ($airflowBase.Success -and $dockerfileText -notmatch 'apache-airflow==') {
     Add-Failure "Airflow image extension must retain the exact apache-airflow package version"
+  }
+}
+$workflowPath = Join-Path $root ".github/workflows/validate.yml"
+if (Test-Path -LiteralPath $workflowPath -PathType Leaf) {
+  $workflowText = Get-Content -Raw -LiteralPath $workflowPath
+  if ($workflowText.Contains("-AllowPendingEvidence")) {
+    Add-Failure "CI must not allow pending publication evidence"
+  }
+  foreach ($literal in @('fetch-depth: 0', 'RUNNER_TEMP', 'actions/upload-artifact@', './tools/benchmark.ps1')) {
+    if (-not $workflowText.Contains($literal)) {
+      Add-Failure "CI is missing isolated V2 smoke evidence guard: $literal"
+    }
   }
 }
 $dependencyFiles = @("requirements.txt", "pyproject.toml") | ForEach-Object {

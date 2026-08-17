@@ -1,0 +1,136 @@
+profile: java-spring-backend
+language: java
+runtime: jvm
+framework: spring-boot
+scope: "Java Spring services whose problem benefits from Spring lifecycle, transactions, validation, observability, or integration support."
+applies_to:
+  - backend
+  - enterprise-backend
+  - payments
+  - orders
+  - reliability
+  - multi-tenant
+  - outbox
+  - cqrs
+  - saga
+problem_fit:
+  use_when:
+    - Java proficiency, records, sealed types, virtual threads, or stable Java contracts are material to the solution
+    - Spring transaction, validation, persistence, security, or observability support reduces delivery risk
+    - a Java-facing library or mixed Java-Kotlin boundary is part of the proof
+  avoid_when:
+    - Spring is added to a small framework-free domain or benchmark with no lifecycle or integration need
+    - Java is selected only to duplicate an equivalent Kotlin repository
+package_layout:
+  default: src/main/java
+  tests: src/test/java
+  resources: src/main/resources
+  rule: "Organize by domain capability; domain and application code must not depend on Spring or infrastructure packages."
+recommended_architectures:
+  - hexagonal
+  - clean-architecture
+  - modular-monolith
+  - cqrs-event-sourcing
+runtime_decisions:
+  default_web_stack: spring-webmvc
+  use_webmvc_when:
+    - persistence and clients are blocking
+    - transactions and request-per-thread behavior fit the workload
+  use_webflux_when:
+    - all I/O is non-blocking end to end
+    - backpressure is part of the measured problem
+  reject_webflux_when:
+    - JDBC, JPA, or blocking clients remain on the request path
+  virtual_threads:
+    use_when:
+      - blocking I/O concurrency is the measured constraint
+      - pinning risks, connection pools, and downstream limits are tested
+    reject_when:
+      - the workload is CPU-bound or downstream capacity is the actual bottleneck
+persistence_decisions:
+  default: spring-data-jdbc
+  use_jpa_when:
+    - aggregate mapping and ORM behavior are explicitly part of the decision
+    - loading strategy, transaction boundaries, and query count are tested
+  use_r2dbc_when:
+    - WebFlux is selected and persistence is non-blocking end to end
+  migrations: flyway
+build:
+  system: gradle
+  dsl: kotlin
+  required_files:
+    - gradlew
+    - gradlew.bat
+    - gradle/wrapper/gradle-wrapper.jar
+    - gradle/wrapper/gradle-wrapper.properties
+    - build.gradle.kts
+    - settings.gradle.kts
+  wrapper_rules:
+    - pin the Gradle distribution version
+    - set distributionSha256Sum in gradle-wrapper.properties
+    - commit the wrapper JAR
+    - keep gradlew executable in Git
+    - use only the Wrapper in CI, Docker, README commands, and automation
+  toolchain_rules:
+    - declare the Java toolchain explicitly
+    - align source, target, test, benchmark, runtime image, and Kotlin adapter targets with that toolchain
+    - fail mixed builds when Java and Kotlin bytecode targets differ
+  reproducibility:
+    - pin Spring Boot and dependency-management inputs
+    - enable dependency locking or verification when supply-chain evidence is claimed
+    - exclude .gradle, build, IDE state, and local caches from version control
+required_tooling:
+  - gradle-kotlin-dsl
+  - gradle-wrapper-with-checksum
+  - spring-boot
+  - spring-validation
+  - spring-boot-actuator
+  - micrometer
+  - junit5
+  - assertj
+  - jacoco
+conditional_tooling:
+  testcontainers:
+    required_when:
+      - database behavior is claimed
+      - broker behavior is claimed
+      - cache, object storage, or external infrastructure semantics are claimed
+    rule: "Mocks and in-memory adapters cannot be the only evidence for an infrastructure claim."
+  persistence_driver:
+    required_when:
+      - the selected persistence adapter is part of the executable path
+  kafka_streams:
+    required_reference: decision-brain/kafka-streams-matrix.yaml
+architecture_rules:
+  - domain and application layers do not import Spring
+  - controllers and listeners translate transport inputs into use cases
+  - repositories, brokers, clocks, and external clients are ports with contract-tested adapters
+  - transactions are owned by an application boundary, not hidden across controllers or domain entities
+  - every abstraction must remove a real dependency or duplicate behavior; avoid ceremonial interfaces
+interoperability:
+  - keep Java public contracts free of Kotlin-specific types
+  - annotate nullability at Java-Kotlin boundaries
+  - test Java core contracts against Kotlin adapters when a mixed build is claimed
+  - align Java and Kotlin toolchains before measuring or publishing mixed-JVM evidence
+quality_gates:
+  - ./gradlew clean check succeeds from a clean clone
+  - gradlew.bat clean check succeeds on Windows
+  - domain and use-case tests run without a Spring context
+  - architecture tests enforce inward dependency direction
+  - Testcontainers tests run whenever infrastructure behavior is part of the claim
+  - Docker build uses the Gradle Wrapper and does not skip tests
+  - health, metrics, graceful shutdown, and error contracts are tested for service claims
+  - benchmark validates correctness before publishing latency or throughput
+benchmark_rules:
+  - use the real HTTP, database, or broker path when that integration is part of the claim
+  - keep warmup outside measured samples
+  - report p50, p95, p99, throughput, errors, and saturation signals appropriate to the workload
+  - record JVM, heap, CPU, memory limit, workload, repetitions, commit, dirty flag, and image digest
+  - compare Java and Kotlin only with equivalent semantics, dependencies, tuning, hardware, and workload
+readme_rules:
+  - open with the measured result and the claim it supports
+  - state MVC versus WebFlux and persistence decisions
+  - show package boundaries and dependency direction
+  - use Wrapper commands for Windows and POSIX
+  - include Testcontainers and reproducible Docker commands
+  - link the benchmark artifact and state its environment

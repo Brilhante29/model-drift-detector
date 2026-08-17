@@ -18,30 +18,21 @@ Finish #22 as the post-deployment monitoring proof in the MLOps and Data Platfor
 
 ## Current State
 
-- Implementation, tests, Dockerfile, CI, SDD, OpenSpec, README, and references are staged.
-- Host feedback: 38 tests passed and the reduced 200/400-row scenarios behaved as expected.
-- Host results are not publication evidence.
-- The reuse kit has a staged monitoring-batch schema, model-monitoring skill for Codex/Claude, documentation, component-pack update, installer update, and kit validation.
-- Docker build, transitive freeze, coverage in the exact image, three 2,000-row runs, aggregation, Desktop synchronization, GitHub publication, and public CI remain pending.
+- The runtime, transitive lock, packaged/shared contracts, multi-stage Docker build, strict CI, and V2 producer are implemented.
+- Python 3.12 container verification passes 48 tests at 91.22% coverage; Ruff passes.
+- Monitoring comparisons now preserve and enforce producer, dataset, contract, model artifact, time-order, artifact, and feature-schema identity.
+- Publication evidence and the final GitHub Actions run remain pending at this source checkpoint.
 
-## Verification Order When Docker Returns
+## Remaining Verification Order
 
-1. Build `model-drift-detector` and record image ID and size.
-2. Freeze transitive dependencies from that image and rebuild.
-3. Run Ruff and all tests with coverage threshold at least 90%.
-4. Exercise tampered manifest, validation CLI, detect CLI, and Prometheus output.
-5. Run one short CI benchmark and validate JSON.
-6. Run three complete 2,000-row benchmarks on the same image.
-7. Preserve raw outputs and failures, then aggregate median and range.
-8. Update README opening and SDD evidence; set `evidence_status: current`.
-9. Run the strict project validator.
-10. Publish the reuse kit first, synchronize its exact commit, then publish #22.
-11. Set repository description/topics and confirm GitHub Actions is green.
+1. Commit this clean source checkpoint.
+2. Run `tools/benchmark.ps1` for three complete 2,000-row repetitions.
+3. Commit the readable summary and V2 publication artifact.
+4. Set `evidence_status: current`, align README/OpenSpec, and run strict validation.
+5. Push #22, verify exact-SHA GitHub Actions, then promote the monitoring skill and contract gates into the reuse kit.
 
 ## Known Risks
 
-- SciPy 1.18.0 and NumPy 2.5.1 integration is not verified in the pinned image yet.
-- Direct dependencies are exact but transitive versions are not frozen.
-- The new project declaration validator has only one strict consumer so far; #21 or #23 should exercise the producer side before it becomes a frozen v2 contract.
+- The monitoring-batch schema has only one strict consumer; #21 should exercise the producer side before a breaking v2 contract.
 - KS does not detect correlation-only multivariate shift; this limitation is intentional and measured separately.
 - A fixed 0.125 feature share is specific to the eight-feature fixture and must not be presented as a universal default.

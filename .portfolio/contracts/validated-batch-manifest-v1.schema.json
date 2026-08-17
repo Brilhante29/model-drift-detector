@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://portfolio.local/contracts/validated-batch-manifest-v1.schema.json",
+  "title": "Validated data batch manifest v1",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "dataset", "contract", "source", "artifacts", "quality", "generated_at"],
+  "properties": {
+    "schema_version": { "const": 1 },
+    "dataset": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "version"],
+      "properties": {
+        "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9._-]*$" },
+        "version": { "type": "string", "minLength": 1 }
+      }
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "sha256"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "sha256": { "$ref": "#/$defs/sha256" }
+      }
+    },
+    "source": { "$ref": "#/$defs/artifact" },
+    "artifacts": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["accepted", "quarantine"],
+      "properties": {
+        "accepted": { "$ref": "#/$defs/artifact" },
+        "quarantine": { "$ref": "#/$defs/artifact" }
+      }
+    },
+    "quality": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["status", "total_rows", "accepted_rows", "rejected_rows", "rejected_rows_percent", "reason_counts"],
+      "properties": {
+        "status": { "const": "passed" },
+        "total_rows": { "type": "integer", "minimum": 0 },
+        "accepted_rows": { "type": "integer", "minimum": 0 },
+        "rejected_rows": { "type": "integer", "minimum": 0 },
+        "rejected_rows_percent": { "type": "number", "minimum": 0, "maximum": 100 },
+        "reason_counts": {
+          "type": "object",
+          "additionalProperties": { "type": "integer", "minimum": 0 }
+        }
+      }
+    },
+    "generated_at": { "type": "string", "format": "date-time" }
+  },
+  "$defs": {
+    "sha256": { "type": "string", "pattern": "^sha256:[0-9a-f]{64}$" },
+    "artifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["uri", "format", "sha256", "rows"],
+      "properties": {
+        "uri": { "type": "string", "minLength": 1 },
+        "format": { "const": "csv" },
+        "sha256": { "$ref": "#/$defs/sha256" },
+        "rows": { "type": "integer", "minimum": 0 }
+      }
+    }
+  }
+}

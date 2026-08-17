@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Feature Store"
+  short_description: "Design and verify decoupled point-in-time feature stores"
+  default_prompt: "Design or audit a Python feature-store repository with point-in-time correctness, fail-closed data contracts, local-first Feast integration, and reproducible benchmark evidence."

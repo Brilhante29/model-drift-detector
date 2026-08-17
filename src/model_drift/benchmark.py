@@ -1,11 +1,13 @@
 from __future__ import annotations
 
+import hashlib
 import json
 import os
 import platform
 import tempfile
 from datetime import UTC, datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 import numpy as np
@@ -54,7 +56,32 @@ def run_benchmark(
     if rows < 200:
         raise ValueError("benchmark rows must be at least 200")
 
+    started_at = datetime.now(UTC).isoformat().replace("+00:00", "Z")
+    benchmark_started = perf_counter()
     reference_source, scenarios = build_scenarios(rows)
+    fixture_document = [
+        {
+            "name": "reference",
+            "artifact": reference_source.identity.artifact_digest,
+            "captured_at": reference_source.identity.captured_at.isoformat(),
+        },
+        *[
+            {
+                "name": scenario.name,
+                "artifact": scenario.batch.identity.artifact_digest,
+                "captured_at": scenario.batch.identity.captured_at.isoformat(),
+                "expected_drift": scenario.expected_drift,
+                "scored": scenario.scored,
+            }
+            for scenario in scenarios
+        ],
+    ]
+    fixture_digest = (
+        "sha256:"
+        + hashlib.sha256(
+            json.dumps(fixture_document, sort_keys=True, separators=(",", ":")).encode()
+        ).hexdigest()
+    )
     telemetry = PrometheusTelemetry()
     monitor = DriftMonitor(
         detector=ScipyKsDetector(minimum_samples=200),
@@ -98,18 +125,12 @@ def run_benchmark(
             )
 
     scored = [result for result in scenario_results if result["scored"]]
-    true_positive = sum(
-        result["expected_drift"] and result["alarm"] for result in scored
-    )
-    false_positive = sum(
-        not result["expected_drift"] and result["alarm"] for result in scored
-    )
+    true_positive = sum(result["expected_drift"] and result["alarm"] for result in scored)
+    false_positive = sum(not result["expected_drift"] and result["alarm"] for result in scored)
     true_negative = sum(
         not result["expected_drift"] and not result["alarm"] for result in scored
     )
-    false_negative = sum(
-        result["expected_drift"] and not result["alarm"] for result in scored
-    )
+    false_negative = sum(result["expected_drift"] and not result["alarm"] for result in scored)
     precision = _ratio(true_positive, true_positive + false_positive)
     recall = _ratio(true_positive, true_positive + false_negative)
     f1 = _ratio(2 * precision * recall, precision + recall)
@@ -123,6 +144,22 @@ def run_benchmark(
         sum(result["alarm"] for result in blind_spots),
         len(blind_spots),
     )
+    duration_seconds = perf_counter() - benchmark_started
+    benchmark_signature = {
+        "rows_per_batch": rows,
+        "scored_scenarios": len(scored),
+        "total_scenarios": len(scenario_results),
+        "feature_count": 8,
+        "fixture_digest": fixture_digest,
+        "contract_id": reference.identity.contract_id,
+        "contract_digest": reference.identity.contract_digest,
+        "model_id": reference.identity.model_id,
+        "model_version": reference.identity.model_version,
+        "model_artifact_digest": reference.identity.model_artifact_digest,
+        "alpha": 0.05,
+        "minimum_ks_effect": 0.10,
+        "minimum_feature_drift_share": 0.125,
+    }
 
     result = {
         "project": "model-drift-detector",
@@ -131,7 +168,9 @@ def run_benchmark(
         "unit": "ratio",
         "timestamp": datetime.now(UTC).isoformat().replace("+00:00", "Z"),
         "command": command,
-        "repeat": len(scored),
+        "repeat": 1,
+        "started_at": started_at,
+        "duration_seconds": duration_seconds,
         "environment": {
             "python": platform.python_version(),
             "implementation": platform.python_implementation(),
@@ -168,9 +207,20 @@ def run_benchmark(
         },
         "proof": {
             "reference_seed": 42,
+            "benchmark_signature": benchmark_signature,
+            "scenario_fixture_digest": fixture_digest,
             "scenario_truth_defined_before_detection": True,
             "monitoring_batch_contract_verified": True,
+            "validated_batch_contract_verified": True,
+            "batch_identity_compatibility_verified": True,
             "contract": ".portfolio/contracts/monitoring-batch.schema.json",
+            "validated_contract": reference.identity.contract_id,
+            "validated_contract_digest": reference.identity.contract_digest,
+            "model_identity": {
+                "id": reference.identity.model_id,
+                "version": reference.identity.model_version,
+                "artifact_digest": reference.identity.model_artifact_digest,
+            },
             "statistical_test": "two-sided Kolmogorov-Smirnov",
             "multiple_test_correction": "Holm family-wise error control",
             "alpha": 0.05,
@@ -180,8 +230,7 @@ def run_benchmark(
             "ground_truth_available_for_model_performance": False,
             "claim_boundary": "data and prediction drift proxy only",
             "documented_blind_spot": "correlation-only multivariate drift",
-            "prometheus_exported": "model_drift_evaluations_total"
-            in telemetry.render(),
+            "prometheus_exported": "model_drift_evaluations_total" in telemetry.render(),
             "scenario_matrix": scenario_results,
         },
         "failures": 0,

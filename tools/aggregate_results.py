@@ -33,9 +33,15 @@ def _load(path: Path) -> dict[str, Any]:
 def _scenario_signature(result: dict[str, Any]) -> tuple:
     matrix = result.get("proof", {}).get("scenario_matrix", [])
     return tuple(
-        (item.get("name"), item.get("expected_drift"), item.get("scored"))
-        for item in matrix
+        (item.get("name"), item.get("expected_drift"), item.get("scored")) for item in matrix
     )
+
+
+def _benchmark_signature(result: dict[str, Any]) -> str:
+    signature = result.get("proof", {}).get("benchmark_signature")
+    if not isinstance(signature, dict) or not signature:
+        raise ValueError("raw run is missing benchmark_signature")
+    return json.dumps(signature, sort_keys=True, separators=(",", ":"))
 
 
 def aggregate(paths: list[Path], output: Path) -> dict[str, Any]:
@@ -47,15 +53,18 @@ def aggregate(paths: list[Path], output: Path) -> dict[str, Any]:
     if len(image_ids) != 1 or image_ids == {"not-recorded"} or None in image_ids:
         raise ValueError("all runs must record the same immutable image_id")
 
-    signatures = {_scenario_signature(item) for item in loaded}
-    if len(signatures) != 1 or not next(iter(signatures)):
+    scenario_signatures = {_scenario_signature(item) for item in loaded}
+    if len(scenario_signatures) != 1 or not next(iter(scenario_signatures)):
         raise ValueError("all runs must contain the same non-empty scenario matrix")
+    benchmark_signatures = {_benchmark_signature(item) for item in loaded}
+    if len(benchmark_signatures) != 1:
+        raise ValueError("all runs must contain the same benchmark_signature")
 
     result = deepcopy(loaded[0])
     result["timestamp"] = datetime.now(UTC).isoformat().replace("+00:00", "Z")
     result["value"] = median(float(item["value"]) for item in loaded)
     result["repeat"] = len(loaded)
-    result["results"] = [path.as_posix() for path in paths]
+    result["results"] = [path.name for path in paths]
     result["environment"]["aggregated_runs"] = len(loaded)
     result["summary"] = {}
     result["metrics"] = {}
@@ -72,7 +81,8 @@ def aggregate(paths: list[Path], output: Path) -> dict[str, Any]:
         "aggregate": "median with min, max, and all samples",
         "raw_results": [path.name for path in paths],
         "image_id": next(iter(image_ids)),
-        "scenario_signature": [list(item) for item in next(iter(signatures))],
+        "scenario_signature": [list(item) for item in next(iter(scenario_signatures))],
+        "benchmark_signature": json.loads(next(iter(benchmark_signatures))),
         "all_failures_preserved": True,
         "source_proof": loaded[0]["proof"],
     }

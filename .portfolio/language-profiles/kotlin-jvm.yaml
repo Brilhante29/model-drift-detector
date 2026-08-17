@@ -1,0 +1,97 @@
+profile: kotlin-jvm
+language: kotlin
+runtime: jvm
+framework: none
+scope: "Framework-free Kotlin JVM applications, libraries, command-line tools, and stream processors. Select another profile when Spring is part of the solution."
+applies_to:
+  - kafka-streams
+  - stream-processing
+  - command-line
+  - libraries
+  - domain-models
+problem_fit:
+  use_when:
+    - sealed hierarchies, null safety, value classes, or exhaustive state handling reduce domain risk
+    - a lightweight JVM runtime is preferable to a dependency-injection framework
+    - Java interoperability or the JVM ecosystem is required
+  avoid_when:
+    - Kotlin is selected only as a resume keyword
+    - the repository needs Spring conventions and lifecycle but omits the Spring profile
+    - coroutines would wrap blocking calls without end-to-end suspending I/O
+package_layout:
+  default: src/main/kotlin
+  tests: src/test/kotlin
+  resources: src/main/resources
+  rule: "Organize by domain capability; keep runtime, broker, filesystem, and framework details outside the domain core."
+build:
+  system: gradle
+  dsl: kotlin
+  required_files:
+    - gradlew
+    - gradlew.bat
+    - gradle/wrapper/gradle-wrapper.jar
+    - gradle/wrapper/gradle-wrapper.properties
+    - build.gradle.kts
+    - settings.gradle.kts
+  wrapper_rules:
+    - pin the Gradle distribution version
+    - set distributionSha256Sum in gradle-wrapper.properties
+    - commit the wrapper JAR
+    - keep gradlew executable in Git
+    - use only the Wrapper in CI, Docker, README commands, and automation
+  toolchain_rules:
+    - declare an explicit Java toolchain
+    - align Kotlin jvmToolchain and jvmTarget with the Java toolchain
+    - compile, test, benchmark, and run the container on the same JVM major unless a compatibility matrix is intentional
+    - fail the build on inconsistent Java and Kotlin targets
+  reproducibility:
+    - pin plugin and dependency versions through the repository's chosen dependency policy
+    - enable dependency locking or verification when supply-chain evidence is claimed
+    - exclude .gradle, build, IDE state, and local caches from version control
+required_tooling:
+  - kotlin-jvm-plugin
+  - junit5
+  - jacoco_or_kover
+  - gradle-wrapper-with-checksum
+conditional_tooling:
+  testcontainers:
+    required_when:
+      - database behavior is claimed
+      - broker behavior is claimed
+      - cache, object storage, or external infrastructure semantics are claimed
+    rule: "An in-memory fake can support unit tests but cannot be the only evidence for an infrastructure claim."
+  coroutines:
+    allowed_when:
+      - I/O is suspending end to end
+      - cancellation, timeout, and structured concurrency behavior are tested
+  kafka_streams:
+    required_reference: decision-brain/kafka-streams-matrix.yaml
+architecture_rules:
+  - depend on ports at the domain boundary
+  - prohibit broker, database, HTTP, and serialization types in domain APIs
+  - keep side effects behind explicit interfaces
+  - model invalid states out when sealed types or value classes materially improve correctness
+  - prefer simple functions and composition over framework-shaped abstractions
+interoperability:
+  - expose Java-friendly public APIs when Java consumers are in scope
+  - avoid Unit, suspend functions, function types, default arguments, and Kotlin-only collection types at Java-facing boundaries
+  - define nullability explicitly and test both Java-calling-Kotlin and Kotlin-calling-Java when interoperability is claimed
+  - do not compare Java and Kotlin performance unless implementation and workload variables are controlled
+quality_gates:
+  - ./gradlew clean check succeeds from a clean clone
+  - gradlew.bat clean check succeeds on Windows
+  - unit tests cover domain invariants without infrastructure
+  - contract tests cover each replaceable adapter
+  - Testcontainers tests run whenever infrastructure behavior is part of the claim
+  - Docker build uses the Gradle Wrapper and does not skip tests
+  - benchmark validates correctness before publishing performance
+benchmark_rules:
+  - record JVM, heap, CPU, memory limit, warmup, repetitions, seed, commit, dirty flag, and image digest
+  - separate in-process microbenchmarks from end-to-end infrastructure benchmarks
+  - report errors, lost work, and duplicate business effects with latency and throughput
+readme_rules:
+  - open with the measured result and the claim it supports
+  - show the package boundary tree and dependency direction
+  - use Wrapper commands for Windows and POSIX
+  - include one reproducible Docker command
+  - link the benchmark artifact and state its environment

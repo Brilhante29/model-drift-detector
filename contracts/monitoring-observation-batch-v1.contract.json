@@ -1,0 +1,1 @@
+{"data_types":["float64","int64"],"id":"monitoring-observation-batch-v1","kind":"tabular-feature-and-prediction-observations","nullable":false,"required_roles":["feature","prediction"],"schema_version":1}

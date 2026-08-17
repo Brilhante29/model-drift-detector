@@ -1,0 +1,11 @@
+{
+  "artifacts": {
+    "tokens.css": "sha256:49118ab4b2f8542cfba8a8558529792c3988c7b6c134b98b5194f707493823d3",
+    "tokens.scss": "sha256:52390e79d2033df415f1458b52b10f7b9e7bef58a82d1c4166dcff3771d9b7b0",
+    "tokens.ts": "sha256:c247155b4f7fc6b59b8fe96c988330f2b53b2f60e62f16d053a3a5925148adc0"
+  },
+  "schema_version": 1,
+  "source": "design-system/tokens.yaml",
+  "source_digest": "sha256:8f97c5764de6adc931e8ea316bf1c0123450a2f0fd75048a627f2c5099a81ea0",
+  "token_version": 1
+}

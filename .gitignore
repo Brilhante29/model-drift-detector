@@ -2,7 +2,11 @@ __pycache__/
 .pytest_cache/
 .ruff_cache/
 .venv/
+*.egg-info/
+.coverage
+htmlcov/
 benchmarks/results/*.json
+benchmarks/publication/*.json
 dist/
 target/
 build/

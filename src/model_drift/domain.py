@@ -1,11 +1,55 @@
 from __future__ import annotations
 
 import math
+import re
 from collections.abc import Mapping
 from dataclasses import dataclass
+from datetime import datetime
 from types import MappingProxyType
 
 MONITORED_ROLES = frozenset({"feature", "prediction"})
+SHA256_PATTERN = re.compile(r"^sha256:[0-9a-f]{64}$")
+
+
+@dataclass(frozen=True)
+class BatchIdentity:
+    producer_project: str
+    producer_version: str
+    dataset_id: str
+    dataset_version: str
+    contract_id: str
+    contract_digest: str
+    validated_manifest_digest: str
+    model_id: str
+    model_version: str
+    model_artifact_digest: str
+    captured_at: datetime
+    artifact_digest: str
+    feature_schema_digest: str
+
+    def __post_init__(self) -> None:
+        for name in (
+            "producer_project",
+            "producer_version",
+            "dataset_id",
+            "dataset_version",
+            "contract_id",
+            "model_id",
+            "model_version",
+        ):
+            if not getattr(self, name):
+                raise ValueError(f"{name} must not be empty")
+        for name in (
+            "contract_digest",
+            "validated_manifest_digest",
+            "model_artifact_digest",
+            "artifact_digest",
+            "feature_schema_digest",
+        ):
+            if not SHA256_PATTERN.fullmatch(getattr(self, name)):
+                raise ValueError(f"{name} must be a sha256 digest")
+        if self.captured_at.tzinfo is None or self.captured_at.utcoffset() is None:
+            raise ValueError("captured_at must be timezone-aware")
 
 
 @dataclass(frozen=True)
@@ -13,6 +57,7 @@ class MonitoringBatch:
     batch_id: str
     values: Mapping[str, tuple[float, ...]]
     roles: Mapping[str, str]
+    identity: BatchIdentity
 
     def __post_init__(self) -> None:
         if not self.batch_id:
@@ -46,6 +91,37 @@ class MonitoringBatch:
     @property
     def row_count(self) -> int:
         return len(next(iter(self.values.values())))
+
+
+def validate_comparable_batches(
+    reference: MonitoringBatch,
+    current: MonitoringBatch,
+) -> None:
+    if reference.batch_id == current.batch_id:
+        raise ValueError("reference and current batch IDs must differ")
+    if reference.identity.artifact_digest == current.identity.artifact_digest:
+        raise ValueError("reference and current artifacts must differ")
+    if reference.identity.captured_at >= current.identity.captured_at:
+        raise ValueError("reference batch must be captured before current batch")
+
+    compatibility_fields = (
+        "producer_project",
+        "producer_version",
+        "dataset_id",
+        "contract_id",
+        "contract_digest",
+        "model_id",
+        "model_version",
+        "model_artifact_digest",
+        "feature_schema_digest",
+    )
+    mismatches = [
+        field
+        for field in compatibility_fields
+        if getattr(reference.identity, field) != getattr(current.identity, field)
+    ]
+    if mismatches:
+        raise ValueError("incompatible monitoring identity: " + ", ".join(mismatches))
 
 
 @dataclass(frozen=True)
@@ -138,17 +214,12 @@ class AlarmPolicy:
         feature_columns = tuple(item for item in columns if item.role == "feature")
         if not feature_columns:
             raise ValueError("at least one feature column is required")
-        feature_drift_share = (
-            sum(item.drifted for item in feature_columns) / len(feature_columns)
+        feature_drift_share = sum(item.drifted for item in feature_columns) / len(
+            feature_columns
         )
-        prediction_drifted = any(
-            item.drifted for item in columns if item.role == "prediction"
-        )
+        prediction_drifted = any(item.drifted for item in columns if item.role == "prediction")
         drifted_columns = tuple(item.name for item in columns if item.drifted)
-        alarm = (
-            feature_drift_share >= self.minimum_feature_drift_share
-            or prediction_drifted
-        )
+        alarm = feature_drift_share >= self.minimum_feature_drift_share or prediction_drifted
         return DriftDecision(
             alarm=alarm,
             feature_drift_share=feature_drift_share,

@@ -9,6 +9,7 @@ from model_drift.domain import (
     ColumnStatistic,
     DriftDecision,
     MonitoringBatch,
+    validate_comparable_batches,
 )
 
 
@@ -51,6 +52,7 @@ class DriftMonitor:
         reference: MonitoringBatch,
         current: MonitoringBatch,
     ) -> Evaluation:
+        validate_comparable_batches(reference, current)
         started = perf_counter()
         statistics = self.detector.compare(reference, current)
         decision = self.policy.decide(statistics)

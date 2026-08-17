@@ -1,6 +1,6 @@
 # #22 model-drift-detector
 
-**Benchmark:** `drift_alarm_f1 = 1.00` (median of 3 Docker runs; image `sha256:bbd8358f30c9959cb349952b1d42c68a2ae96c7b16bb6d31807c9ac162a11f1c`).
+**Benchmark:** publication evidence pending for the source-locked Docker workload.
 
 **Proves:** an auditable post-deployment monitor can reject tampered batches, distinguish data and prediction drift from model-performance claims, control multiple tests, and score its alarm policy against deterministic scenario truth.
 
@@ -17,12 +17,12 @@ The default command needs no network, secret, paid API, database, broker, or clo
 
 | Metric | Value | Unit | Meaning |
 |---|---:|---|---|
-| Alarm F1 | 1.00 | ratio | median across 3 pinned-image runs |
-| False-positive rate | 0.00 | ratio | stable scenarios incorrectly alarmed |
-| Detection p95 | 45.28 | ms | median comparison and policy tail |
-| Blind-spot detection | 0.00 | ratio | documented univariate correlation-only blind spot |
+| Alarm F1 | pending | ratio | median across 3 pinned-image runs |
+| False-positive rate | pending | ratio | stable scenarios incorrectly alarmed |
+| Detection p95 | pending | ms | median comparison and policy tail |
+| Blind-spot detection | pending | ratio | documented univariate correlation-only blind spot |
 
-Publication evidence is complete: three Docker runs share one immutable image, preserve raw results, aggregate median/min/max, record environment and image ID, and report zero failures. Raw runs are under `benchmarks/results/run-{1,2,3}/`.
+The publication harness requires a clean source commit, builds one image, runs three independent repetitions, preserves every metric sample, and emits both a readable summary and Benchmark Result V2 provenance.
 
 ## What It Monitors
 
@@ -40,12 +40,14 @@ The fixed benchmark contains eight stable scenarios, four mean shifts, four scal
 
 ## Artifact Contract
 
-`monitoring-batch.manifest.json` records producer, model version, capture time, column roles, payload format, rows, bytes, and SHA-256. The consumer:
+`monitoring-batch.manifest.json` records producer, model artifact identity, capture time, column roles, payload format, rows, bytes, and SHA-256. It also locks a successful upstream `validated-batch-manifest-v1`. The consumer:
 
 1. resolves the payload inside the manifest directory;
 2. rejects path escape, oversized files, unknown fields, duplicate columns, nulls, and non-finite values;
-3. verifies bytes and SHA-256 before parsing;
-4. requires exact CSV column order and row count.
+3. reconciles source, accepted, quarantine, and quality rows;
+4. verifies every digest before parsing;
+5. rejects incompatible producer, contract, model, time order, or feature schema;
+6. requires exact CSV column order and row count.
 
 The shared schema lives at [`monitoring-batch.schema.json`](.portfolio/contracts/monitoring-batch.schema.json).
 
@@ -89,12 +91,12 @@ The architecture is a pipeline because ordered evidence transformations dominate
 - Statistical, artifact, policy, telemetry, fixture, and CLI behavior have focused tests.
 - Docker uses a non-root user and a Python base pinned by tag and OCI digest.
 - OpenSpec records intent, architecture self-challenge, reuse delta, benchmark questions, and release verification.
-- Benchmark evidence is `current`: three 2,000-row Docker runs use the final immutable image, and the committed aggregate preserves their raw results.
+- Benchmark publication is source locked: the V2 artifact must reference an ancestor commit whose lock and workload remain unchanged.
 
 ## Local Development
 
 ```bash
-python -m pip install -e ".[dev]"
+python -m pip install -c constraints.lock -e ".[dev]"
 pytest
 ruff check src tests
 ```

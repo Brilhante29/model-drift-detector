@@ -39,7 +39,7 @@ These are implementation choices for #22, not universal portfolio defaults.
 
 - [x] Add monitoring-batch JSON Schema.
 - [x] Copy the schema into generated project standards.
-- [x] Add model-monitoring skills to Codex and Claude.
+- [x] Add mirrored model-monitoring skills to the proving project for promotion.
 - [x] Add model-monitoring documentation.
 - [x] Update MLOps pack skills, metrics, and preferred artifacts.
 - [x] Validate all new reusable files and patterns.
@@ -54,4 +54,4 @@ These are implementation choices for #22, not universal portfolio defaults.
 
 ## Verdict
 
-The implementation-stage reuse review is `patch-required-and-applied` for the artifact, skills, docs, and component pack. Project declaration validation is included and kit-validated. Runtime validation passed in three Docker runs on one immutable image; the aggregate is committed under `benchmarks/results/summary.json`.
+The implementation-stage reuse review is `patch-required-and-applied` locally. Runtime tests and lint pass in Docker; canonical three-run evidence and reuse-kit promotion remain release gates.

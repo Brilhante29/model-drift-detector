@@ -1,0 +1,4 @@
+interface:
+  display_name: "Medical AI Evaluation"
+  short_description: "Design leakage-safe non-clinical medical ML evaluation"
+  default_prompt: "Use the medical AI evaluation profile to design and validate this benchmark."

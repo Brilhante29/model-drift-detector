@@ -1,4 +1,3 @@
-
 import pytest
 
 from model_drift.benchmark import run_benchmark
@@ -12,6 +11,10 @@ def test_benchmark_scores_labeled_scenarios_and_preserves_blind_spot(tmp_path):
     assert result["metric"] == "drift_alarm_f1"
     assert result["value"] == 1.0
     assert result["summary"]["false_positive_rate"] == 0.0
+    assert result["repeat"] == 1
+    assert result["proof"]["validated_batch_contract_verified"] is True
+    assert result["proof"]["batch_identity_compatibility_verified"] is True
+    assert result["proof"]["benchmark_signature"]["scored_scenarios"] == 20
     assert result["proof"]["ground_truth_available_for_model_performance"] is False
     assert result["proof"]["documented_blind_spot"].startswith("correlation-only")
     assert len(result["proof"]["scenario_matrix"]) == 22

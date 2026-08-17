@@ -1,0 +1,10 @@
+{
+  "generated_at": "2026-07-30T00:00:00Z",
+  "repository_count": 4,
+  "repositories": [
+    {"id":"1","name":"scaffold-project","head":"1111111111111111111111111111111111111111","branch":"main","upstream":"","declared_status":"scaffold","docker":false,"ci":false,"benchmark_tracked":false,"benchmark_contract":false,"benchmark_contract_v2":false,"control":false,"placeholders":0,"dirty_files":0,"remote_configured":false,"upstream_configured":false,"local_candidate":false,"publication_candidate":false,"publication_evidence":false,"published_verified":false},
+    {"id":"2","name":"validation-project","head":"2222222222222222222222222222222222222222","branch":"main","upstream":"origin/main","declared_status":"benchmarked","docker":true,"ci":true,"benchmark_tracked":true,"benchmark_contract":true,"benchmark_contract_v2":false,"control":true,"placeholders":0,"dirty_files":0,"remote_configured":true,"upstream_configured":true,"local_candidate":true,"publication_candidate":false,"publication_evidence":false,"published_verified":false},
+    {"id":"3","name":"release-project","head":"3333333333333333333333333333333333333333","branch":"feature/release","upstream":"origin/feature/release","declared_status":"published","docker":true,"ci":true,"benchmark_tracked":true,"benchmark_contract":true,"benchmark_contract_v2":true,"control":true,"placeholders":0,"dirty_files":0,"remote_configured":true,"upstream_configured":true,"local_candidate":true,"publication_candidate":true,"publication_evidence":false,"published_verified":false},
+    {"id":"4","name":"completed-project","head":"4444444444444444444444444444444444444444","branch":"main","upstream":"origin/main","declared_status":"published","docker":true,"ci":true,"benchmark_tracked":true,"benchmark_contract":true,"benchmark_contract_v2":true,"control":true,"placeholders":0,"dirty_files":0,"remote_configured":true,"upstream_configured":true,"local_candidate":true,"publication_candidate":true,"publication_evidence":true,"published_verified":true}
+  ]
+}

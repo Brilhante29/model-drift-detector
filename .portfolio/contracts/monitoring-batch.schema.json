@@ -5,7 +5,7 @@
   "description": "Versioned manifest for local-first, auditable tabular monitoring batches.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schema_version", "kind", "batch_id", "captured_at", "producer", "model", "data", "columns"],
+  "required": ["schema_version", "kind", "batch_id", "captured_at", "producer", "model", "validated_batch", "data", "columns"],
   "properties": {
     "schema_version": { "const": 1 },
     "kind": { "const": "tabular-monitoring-batch" },
@@ -13,6 +13,7 @@
     "captured_at": { "type": "string", "format": "date-time" },
     "producer": { "$ref": "#/$defs/producer" },
     "model": { "$ref": "#/$defs/model" },
+    "validated_batch": { "$ref": "#/$defs/validated_batch" },
     "data": { "$ref": "#/$defs/data" },
     "columns": {
       "type": "array",
@@ -36,10 +37,18 @@
       }
     },
     "model": {
-      "type": "object", "additionalProperties": false, "required": ["id", "version"],
+      "type": "object", "additionalProperties": false, "required": ["id", "version", "artifact_sha256"],
       "properties": {
         "id": { "type": "string", "minLength": 1, "maxLength": 128 },
-        "version": { "type": "string", "minLength": 1, "maxLength": 128 }
+        "version": { "type": "string", "minLength": 1, "maxLength": 128 },
+        "artifact_sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
+      }
+    },
+    "validated_batch": {
+      "type": "object", "additionalProperties": false, "required": ["path", "sha256"],
+      "properties": {
+        "path": { "type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9._-]*$" },
+        "sha256": { "type": "string", "pattern": "^sha256:[a-f0-9]{64}$" }
       }
     },
     "data": {

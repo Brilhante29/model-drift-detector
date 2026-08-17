@@ -1,3 +1,4 @@
+import hashlib
 import json
 
 import pytest
@@ -32,6 +33,10 @@ def test_bundle_round_trip_verifies_hash_schema_and_rows(tmp_path):
     assert actual.batch_id == expected.batch_id
     assert actual.row_count == expected.row_count
     assert tuple(actual.values) == tuple(expected.values)
+    assert actual.identity.model_version == "1"
+    assert actual.identity.dataset_id == "customer-risk-observations"
+    assert actual.identity.contract_id == "monitoring-observation-batch-v1"
+    assert actual.identity.artifact_digest == expected.identity.artifact_digest
 
 
 def test_bundle_rejects_tampered_payload(tmp_path):
@@ -39,7 +44,7 @@ def test_bundle_rejects_tampered_payload(tmp_path):
     payload = manifest.parent / "batch.csv"
     payload.write_bytes(payload.read_bytes() + b"\n")
 
-    with pytest.raises(ValueError, match="byte count"):
+    with pytest.raises(ValueError, match="validated artifact"):
         load_monitoring_batch(manifest)
 
 
@@ -87,12 +92,57 @@ def test_bundle_rejects_csv_header_mismatch_after_rehash(tmp_path):
     payload = ("\n".join(lines) + "\n").encode()
     payload_path.write_bytes(payload)
 
-    import hashlib
+    digest = "sha256:" + hashlib.sha256(payload).hexdigest()
+    validated_path = manifest.parent / "validated-batch.manifest.json"
+    validated = read_manifest(validated_path)
+    validated["source"]["sha256"] = digest
+    validated["artifacts"]["accepted"]["sha256"] = digest
+    write_manifest(validated_path, validated)
 
     content = read_manifest(manifest)
     content["data"]["bytes"] = len(payload)
-    content["data"]["sha256"] = hashlib.sha256(payload).hexdigest()
+    content["data"]["sha256"] = digest.removeprefix("sha256:")
+    content["validated_batch"]["sha256"] = (
+        "sha256:" + hashlib.sha256(validated_path.read_bytes()).hexdigest()
+    )
     write_manifest(manifest, content)
 
     with pytest.raises(ValueError, match="columns or order"):
+        load_monitoring_batch(manifest)
+
+
+def test_bundle_rejects_tampered_validated_manifest(tmp_path):
+    _, manifest = create_bundle(tmp_path)
+    validated = manifest.parent / "validated-batch.manifest.json"
+    content = read_manifest(validated)
+    content["dataset"]["version"] = "tampered"
+    write_manifest(validated, content)
+
+    with pytest.raises(ValueError, match="validated batch manifest SHA-256"):
+        load_monitoring_batch(manifest)
+
+
+def test_bundle_rejects_unknown_validated_contract_even_when_rehashed(tmp_path):
+    _, manifest = create_bundle(tmp_path)
+    validated = manifest.parent / "validated-batch.manifest.json"
+    content = read_manifest(validated)
+    content["contract"]["id"] = "unknown-contract"
+    write_manifest(validated, content)
+    monitoring = read_manifest(manifest)
+    monitoring["validated_batch"]["sha256"] = (
+        "sha256:" + hashlib.sha256(validated.read_bytes()).hexdigest()
+    )
+    write_manifest(manifest, monitoring)
+
+    with pytest.raises(ValueError, match="unknown data contract"):
+        load_monitoring_batch(manifest)
+
+
+def test_bundle_rejects_model_without_artifact_identity(tmp_path):
+    _, manifest = create_bundle(tmp_path)
+    content = read_manifest(manifest)
+    del content["model"]["artifact_sha256"]
+    write_manifest(manifest, content)
+
+    with pytest.raises(ValidationError, match="artifact_sha256"):
         load_monitoring_batch(manifest)

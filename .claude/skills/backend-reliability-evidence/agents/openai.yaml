@@ -1,0 +1,4 @@
+interface:
+  display_name: "Backend Reliability Evidence"
+  short_description: "Build real transactional failure evidence"
+  default_prompt: "Use the backend reliability evidence workflow to replace simulations with reproducible transactional failure proofs."

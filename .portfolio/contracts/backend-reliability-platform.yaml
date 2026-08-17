@@ -1,0 +1,71 @@
+schema_version: 1
+program: backend-reliability-platform
+transactional_core:
+  - project: spring-hexagonal-payments
+    number: 11
+    role: synchronous idempotent payment boundary
+    provides: payment-authorization-v1
+  - project: event-sourcing-orders
+    number: 14
+    role: durable order history, replay, and CQRS projection
+    consumes: payment-authorization-v1
+    produces: commerce-event-v1
+  - project: saga-orchestrator
+    number: 16
+    role: durable coordination and idempotent compensation
+    consumes: commerce-event-v1
+    produces: commerce-event-v1
+  - project: outbox-pattern
+    number: 20
+    role: atomic business change and asynchronous delivery
+    consumes: commerce-event-v1
+    produces: commerce-event-v1
+  - project: cache-strategies-bench
+    number: 19
+    role: accelerated read path with PostgreSQL as source of truth
+traffic_platform_edge:
+  - project: go-rate-limiter
+    number: 12
+    role: atomic distributed quota decision shared by ingress nodes
+    provides: rate-limit-decision-v1
+  - project: api-gateway-lite
+    number: 18
+    role: authenticated ingress, quota enforcement, context propagation, and proxy overhead evidence
+    consumes: rate-limit-decision-v1
+    provides: gateway-context-v1
+  - project: multi-tenant-starter
+    number: 17
+    role: PostgreSQL-backed tenant onboarding and isolated request boundary
+    consumes: gateway-context-v1
+  - project: grpc-vs-rest-bench
+    number: 15
+    role: protocol comparison over one semantic operation and payload
+    provides: protocol-parity-evidence-v1
+  - project: mini-aws-emulator
+    number: 13
+    role: scoped AWS SDK conformance through pinned Kumo with a real-AWS configuration switch
+    provides: local-cloud-conformance-v1
+rules:
+  - databases are private to each repository
+  - synchronous retries preserve idempotency keys
+  - asynchronous retries preserve eventId and correlationId
+  - local adapters and measured infrastructure adapters implement the same ports
+  - benchmarks regenerate evidence during the measured run
+  - no repository may claim exactly-once external effects
+  - ingress preserves correlation, trace, and tenant context across proxy boundaries
+  - rate-limit storage failures fail closed and are reported separately from quota rejections
+  - tenant isolation is measured on real PostgreSQL and reports any cross-tenant leakage
+  - REST and gRPC comparisons use the same semantic operation, payload, warm-up, and measured workload
+  - Kumo conformance is scoped to measured operations and real AWS remains a configuration-only adapter switch
+  - CI smoke evidence uses a separate artifact path and never overwrites committed publication evidence
+failure_metrics:
+  - consistency_failures
+  - uncompensated_sagas
+  - lost_messages
+  - duplicate_deliveries
+  - publish_lag_p95_ms
+  - rate_limit_store_failures
+  - cross_tenant_leakage
+  - protocol_parity_failures
+  - gateway_failures
+  - conformance_failures

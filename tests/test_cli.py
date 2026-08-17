@@ -1,12 +1,12 @@
 import json
 
 from model_drift.cli import run
-from model_drift.fixtures import generate_batch, write_bundle
+from model_drift.fixtures import REFERENCE_CAPTURED_AT, generate_batch, write_bundle
 
 
 def test_cli_validates_and_detects_bundles(tmp_path, capsys):
     reference = write_bundle(
-        generate_batch("reference", 42, 200),
+        generate_batch("reference", 42, 200, captured_at=REFERENCE_CAPTURED_AT),
         tmp_path / "reference",
     )
     current = write_bundle(

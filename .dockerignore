@@ -2,7 +2,6 @@
 .github
 .codex
 .claude
-.portfolio
 openspec
 sdd
 __pycache__
@@ -11,3 +10,4 @@ __pycache__
 .ruff_cache
 .coverage
 benchmarks/results/*.json
+benchmarks/publication/*.json

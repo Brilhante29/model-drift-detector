@@ -49,9 +49,9 @@ inspirations:
       - fluid iteration: update artifacts as implementation reveals facts
       - references/worksets mental model for multi-repo work
     adapted_for_this_kit:
-      - `portfolio-reuse-kit` is the central planning store
+      - "`portfolio-reuse-kit` is the central planning store"
       - generated projects get an `openspec/config.yaml` pointer and `.portfolio/` snapshot
-      - `sdd/` remains the lightweight always-present fallback
+      - "`sdd/` remains the lightweight always-present fallback"
     rejected:
       - hard dependency on a globally installed CLI for validation
       - planning artifacts with no benchmark or publication gate

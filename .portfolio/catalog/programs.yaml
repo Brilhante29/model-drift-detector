@@ -12,15 +12,15 @@ programs:
     portfolio_story: "From evaluation harness to production-aware retrieval and inference decisions."
   - id: applied-computer-vision
     name: Applied Computer Vision and Medical AI
-    narrative: "Train, evaluate, serve, and benchmark visual models for real-world tasks."
+    narrative: "Train, evaluate, serve, and benchmark visual models with explicit evidence scope."
     problem: "Computer vision projects need reproducible training, measurable quality, and deployable serving paths."
-    projects: [1, 4, 5, 6, 7]
+    projects: [1, 5, 6, 7]
     shared_assets:
-      - dataset cards
-      - confusion matrix templates
-      - latency per image benchmark
-      - serving benchmark table
-    portfolio_story: "From model training to domain-specific evaluation and API serving."
+      - dataset provenance and license contracts
+      - vision model artifact manifest
+      - leakage-safe medical evaluation rules
+      - latency and HTTP serving benchmark contracts
+    portfolio_story: "From reproducible YOLO training to image-only OCR, real medical evaluation, and verified HTTP serving."
   - id: backend-reliability-platform
     name: Backend Reliability and Architecture Platform
     narrative: "Show production backend patterns through measurable reliability, latency, and consistency."
@@ -32,19 +32,23 @@ programs:
       - contract tests
       - failure scenarios
       - p95/p99 latency dashboards
-    portfolio_story: "From clean boundaries to distributed consistency and resilience patterns."
+      - commerce-event-v1 envelope
+      - payment authorization provider contract
+      - benchmark result v2 failure evidence
+    portfolio_story: "A commerce reliability platform from authenticated, rate-limited, tenant-aware ingress through protocol and local-cloud decisions to idempotent payments, durable order history, saga compensation, outbox delivery, and accelerated reads."
   - id: mlops-data-platform
     name: MLOps and Data Platform
     narrative: "Move models and data from experiment to monitored, validated, production-like workflows."
     problem: "ML systems fail when training, features, data quality, drift, and streaming are not connected."
-    projects: [21, 22, 23, 26, 28]
+    projects: [4, 21, 22, 23, 26, 28]
     shared_assets:
       - model registry conventions
-      - feature schemas
-      - data quality checks
+      - validated batch manifest v1
+      - versioned data and feature schemas
+      - accepted and quarantine artifact protocol
       - drift reports
       - streaming benchmarks
-    portfolio_story: "From training to features, validation, drift, and streaming operation."
+    portfolio_story: "From a fail-closed validated batch to feature serving, training, registry, clinical evaluation, drift detection, and streaming operation through versioned artifact contracts."
   - id: delivery-observability-infra
     name: Delivery, Observability, and Infrastructure
     narrative: "Standardize delivery, telemetry, infrastructure, and performance evidence across repositories."
@@ -57,3 +61,15 @@ programs:
       - k6 load profiles
       - release checklist
     portfolio_story: "From automated delivery to measurable operations and infrastructure."
+  - id: portfolio-evidence-platform
+    name: Portfolio Evidence and Operations Platform
+    narrative: "Connect every repository through versioned evidence, public comparison, and audited operations."
+    problem: "The portfolio needs one trustworthy plane for cross-language benchmark provenance, comparability, publication readiness, and remediation."
+    projects: [31, 32, 33]
+    shared_assets:
+      - benchmark result v2 schema and golden fixtures
+      - OpenAPI command contract
+      - GraphQL query schema
+      - generated design tokens
+      - cross-language compatibility tests
+    portfolio_story: "From isolated benchmark files to an interoperable, queryable, and operable evidence system."

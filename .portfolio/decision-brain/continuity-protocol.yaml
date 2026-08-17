@@ -2,6 +2,8 @@ version: 1
 principle: "Preserve decision continuity before quota, context, or tool limits interrupt delivery. Record auditable engineering state, never private chain-of-thought."
 canonical_handoff: .portfolio-control/CURRENT_HANDOFF.md
 mechanical_snapshot: .portfolio-control/CONTINUITY_STATE.md
+durable_decision_map: docs/agent-continuation-map.md
+project_decision_context: .portfolio-control/DECISION_CONTEXT.md
 quota_observability:
   exact_account_balance_available: false
   fallback: "Treat a user quota warning as immediate; otherwise checkpoint at objective milestones and before long-running work."
@@ -46,6 +48,9 @@ exit_loop_rules:
   - publish a green repository before starting a dependent consumer
   - use the reuse-improvement loop only for a concrete repeated gap
 automation:
-  command: tools/capture-continuity-state.ps1
+  repository_snapshot_command: tools/capture-continuity-state.ps1
+  portfolio_checkpoint_command: tools/checkpoint-portfolio.ps1
+  checkpoint_source: tools/validate-portfolio.ps1
+  completion_requires: published_verified
   snapshot_is_mechanical: true
   handoff_requires_agent_judgment: true

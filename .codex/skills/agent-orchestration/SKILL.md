@@ -31,6 +31,19 @@ Specialist subagents own narrow decisions:
 
 If a runtime cannot spawn subagents, execute the same roles sequentially and record the outputs in `sdd/agent-handoff.md` and `sdd/reuse-improvement-review.md`.
 
+
+## Efficiency and Limit Gate
+
+Before delegation, verify the writable scope, required tools, repository cleanliness, and dependency/runtime availability. Agents outside the writable workspace are read-only; the principal agent stages or applies their approved changes.
+
+- Pilot one write-capable agent before parallel fan-out.
+- Cap heavy workers at four and give each one disjoint ownership.
+- Wait at most 60 seconds once, then inspect progress. Take over after two observations with no progress.
+- Run static checks and targeted tests before Docker builds.
+- Calibrate benchmarks at about 1% of the intended workload before a full run.
+- Finalize defaults and commands before expensive builds; do not rerun unchanged benchmarks just to test argument wiring.
+- Record authorization limits, timeouts, tool failures, invalid diagnostics, no-progress agents, and redundant work with `tools/record-execution-event.ps1`.
+- Mark user-owned or external-tool windows explicitly so they are excluded without deleting their history.
 ## Required Decision Order
 
 1. Program and portfolio fit.
@@ -67,3 +80,5 @@ Do not publish or call a project finished until these exist:
 - README number, claim, and result
 - `REFERENCES.md`
 - passing validation
+- tracked primary benchmark evidence that validates against contract v1 locally and v2 before publication
+- verified remote, upstream, and successful CI evidence before using `published`

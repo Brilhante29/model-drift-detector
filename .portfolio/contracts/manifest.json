@@ -1,5 +1,9 @@
 {
   "assets": {
+    "backend-reliability-platform.yaml": {
+      "bytes": 2948,
+      "sha256": "sha256:67cd63bb67a12e1fb6e661add1ce1c862138da92298f743cf42fbdc6fd36272d"
+    },
     "benchmark-result-v2.schema.json": {
       "bytes": 3741,
       "sha256": "sha256:821a16388913afb19fe70e37256138528126ed6fa14ef06f74191f5608e86c7a"
@@ -7,6 +11,10 @@
     "benchmark-result.schema.json": {
       "bytes": 746,
       "sha256": "sha256:7df83b5774b363ff6b23a902595c50a5d34a89e66866d898a9dac43fb807a9de"
+    },
+    "commerce-event-v1.schema.json": {
+      "bytes": 1006,
+      "sha256": "sha256:fdb16ccca3e0bb63d9e0ea2ffed729f2022022d6a4460a7157302bb2a279ace8"
     },
     "execution-event.schema.json": {
       "bytes": 1988,
@@ -19,6 +27,10 @@
     "fixtures/benchmark-result-v2.valid.json": {
       "bytes": 1749,
       "sha256": "sha256:0074aeacec5abbc6d5938d6ae330160865d5d866237df0ae76d0425b27e1da2e"
+    },
+    "fixtures/portfolio-audit.valid.json": {
+      "bytes": 2017,
+      "sha256": "sha256:cb123086c3b2d52b74a096796ab34f53ee12ea198582da00e12edb21858e3190"
     },
     "fixtures/project.invalid.json": {
       "bytes": 11193,
@@ -60,6 +72,10 @@
       "bytes": 11193,
       "sha256": "sha256:9a40ded483840249752f97e81d8c9b78466f72c0e46940aa63a143530188a85e"
     },
+    "mlops-data-platform.yaml": {
+      "bytes": 2647,
+      "sha256": "sha256:6f97f72024e66055ce91b5fe0693cd29ab232073de327cb59eb5d5af97322d09"
+    },
     "monitoring-batch.schema.json": {
       "bytes": 3153,
       "sha256": "sha256:1684fb18436414e8e2dbf7e0785bae56ea49f5eb18c28d4cad72947f7df9aef4"
@@ -72,16 +88,28 @@
       "bytes": 6048,
       "sha256": "sha256:cc92dab0c92e95e7ce19feb396706f3d9456a611bbf0704d11c4d4ea20a3583a"
     },
+    "prediction-artifact.schema.json": {
+      "bytes": 1390,
+      "sha256": "sha256:113a6bd9783e9a9bbcd66812e1a3c76972fd29d9dc5688dad1277874668deaae"
+    },
+    "producer-lock.schema.json": {
+      "bytes": 827,
+      "sha256": "sha256:409d0e63cf46963deea9f6d09295923093d40dab43dceb1cf51dfe9af64a7f2e"
+    },
     "project.schema.json": {
-      "bytes": 25195,
-      "sha256": "sha256:fd05d067cb1b98119c8d2f1e7b1c5565632710850409cd3ffd94d675288eac12"
+      "bytes": 25252,
+      "sha256": "sha256:5676430723f2f1515ad7815b30a9d3f24325981701414388d8c5a972887027da"
     },
     "publication-evidence.schema.json": {
       "bytes": 983,
       "sha256": "sha256:4a69fe3b65b66dde595216d1014e210545a62db3c4d1bcdcf6d2dd1fe42373a3"
+    },
+    "validated-batch-manifest-v1.schema.json": {
+      "bytes": 2458,
+      "sha256": "sha256:21e591d26eab411000b3dca54ea4349c860aafb3e320db50ecb1cadeb0e2cb52"
     }
   },
   "contract_set": "portfolio-interoperability",
-  "contract_set_version": "1.2.0",
+  "contract_set_version": "1.4.0",
   "schema_version": 1
 }

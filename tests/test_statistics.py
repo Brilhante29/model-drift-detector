@@ -2,14 +2,19 @@ import numpy as np
 import pytest
 
 from model_drift.domain import MonitoringBatch
+from model_drift.fixtures import generate_batch
 from model_drift.statistics import ScipyKsDetector
 
 
 def make_batch(name, values, role="feature"):
+    identity = generate_batch(
+        name, seed=42 if name == "reference" else 43, rows=len(values)
+    ).identity
     return MonitoringBatch(
         batch_id=name,
         values={"feature": tuple(float(value) for value in values)},
         roles={"feature": role},
+        identity=identity,
     )
 
 
@@ -36,6 +41,7 @@ def test_scipy_detector_rejects_schema_and_size_mismatch():
         batch_id="current",
         values={"other": values},
         roles={"other": "feature"},
+        identity=generate_batch("current", seed=43, rows=200).identity,
     )
     with pytest.raises(ValueError, match="columns"):
         detector.compare(reference, current)

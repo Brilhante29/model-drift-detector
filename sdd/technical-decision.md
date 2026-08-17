@@ -7,7 +7,7 @@
 - CPU-only execution.
 - No runtime network, secret, database, broker, or cloud dependency.
 
-The final dependency freeze and image metadata remain a release gate because Docker execution is currently unavailable.
+The build creates a wheelhouse first and installs the runtime with `--no-index`. `constraints.lock` freezes direct and transitive dependencies.
 
 ## Libraries
 
@@ -16,10 +16,11 @@ The final dependency freeze and image metadata remain a release gate because Doc
 | NumPy 2.5.1 | Deterministic PCG64-backed scenario arrays and percentile aggregation. |
 | SciPy 1.18.0 | Primary two-sided `ks_2samp` implementation. |
 | Pydantic 2.13.4 | Strict manifest fields, bounded strings and sizes, role/type checks, and unknown-field rejection. |
+| jsonschema 4.26.0 | Draft 2020-12 validation of the shared upstream validated-batch contract. |
 | prometheus-client 0.25.0 | Official counters, gauges, and histogram with bounded labels. |
 | Evidently | Rejected as a core dependency; optional future comparison/reporting adapter only. |
 
-Direct dependencies are exact. Transitive versions must be frozen from the successful Docker build before publication.
+The validated-batch schema is packaged in the wheel and checked byte-for-byte against the shared project contract.
 
 ## Why KS Plus Holm Plus Effect
 
@@ -35,6 +36,8 @@ The operational policy remains a domain decision rather than a SciPy default.
 - Payload name must be a basename.
 - Resolved payload parent must equal the resolved manifest directory.
 - Byte count and SHA-256 are verified before decoding.
+- Producer, dataset, contract, model artifact, capture order, artifact, and feature schema identities must be compatible across a comparison.
+- Monitoring data must be the accepted artifact of a successful validated-batch manifest; source, accepted, quarantine, and quality counts reconcile.
 - UTF-8, exact header/order, row count, numeric values, nullability, finiteness, roles, and minimum samples are enforced.
 - Runtime network access is unnecessary.
 

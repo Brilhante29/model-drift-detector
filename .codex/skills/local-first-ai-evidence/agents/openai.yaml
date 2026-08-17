@@ -1,0 +1,4 @@
+interface:
+  display_name: "Local-first AI Evidence"
+  short_description: "Build pinned local AI producers and offline evaluators"
+  default_prompt: "Use a pinned local OpenAI-compatible provider, emit provenance-bound artifacts, and keep evaluation offline and provider-neutral."

@@ -26,6 +26,11 @@ runtime_decisions:
   reject_webflux_when:
     - database and clients are blocking
     - reactive code would obscure the domain proof
+  spring_boot_4:
+    json_default: jackson-3
+    kotlin_json_module: tools.jackson.module:jackson-module-kotlin
+    flyway_dependency: spring-boot-starter-flyway
+    migration_rule: "Do not carry Jackson 2 coordinates or the pre-Boot-4 Flyway dependency shape into a Boot 4 repository."
 persistence_decisions:
   default: spring-data-jdbc
   use_jpa_when:
@@ -34,12 +39,15 @@ persistence_decisions:
   use_r2dbc_when:
     - WebFlux is selected and persistence is non-blocking end to end
   migrations: flyway
+  jdbc_time_rule: "Bind Instant explicitly as UTC OffsetDateTime when the PostgreSQL driver cannot infer the desired timestamptz mapping."
 required_tooling:
   - gradle-kotlin-dsl
+  - gradle-wrapper-with-checksum
   - spring-boot
   - kotlin-spring-plugin
   - spring-validation
-  - flyway
+  - spring-boot-starter-flyway
+  - jackson-module-kotlin
   - postgresql
   - testcontainers
   - junit5
@@ -52,9 +60,13 @@ quality_gates:
   - integration tests with Testcontainers for database or broker
   - architecture decision in sdd/technical-decision.md
   - p95 or p99 benchmark for HTTP projects
+  - Gradle wrapper scripts for Windows and POSIX plus wrapper JAR, properties, and distribution checksum
 benchmark_rules:
   - use k6 for HTTP load tests
   - report p95 and p99 latency
+  - add p99 to summaryTrendStats when a custom k6 summary reads p(99)
+  - keep warm-up requests outside measured latency and throughput metrics
+  - compute throughput from measured iterations divided by the configured measured duration
   - include coverage when architecture is part of the claim
   - include failure scenario for outbox, saga, or broker projects
 readme_rules:
@@ -63,3 +75,4 @@ readme_rules:
   - state persistence decision
   - include Testcontainers command
   - include benchmark result table
+  - document Windows, Linux, macOS, and universal Docker commands

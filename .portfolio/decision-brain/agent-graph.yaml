@@ -33,6 +33,32 @@ source_of_truth:
   schemas:
     - contracts/project.schema.json
     - contracts/benchmark-result.schema.json
+    - contracts/benchmark-result-v2.schema.json
+    - contracts/execution-event.schema.json
+    - contracts/publication-evidence.schema.json
+
+execution_efficiency:
+  preflight:
+    - writable-scope
+    - required-tools
+    - clean-worktree
+    - dependency-and-runtime-availability
+  delegation:
+    heavy_agent_limit: 4
+    pilot_before_fanout: true
+    external_workspace_agents: read-only
+    max_wait_before_progress_check_seconds: 60
+    no_progress_observations_before_takeover: 2
+  expensive_work:
+    static-and-targeted-tests-before-docker: true
+    benchmark_calibration_fraction: 0.01
+    finalize_defaults_before_full_build: true
+  telemetry:
+    schema: contracts/execution-event.schema.json
+    log: .portfolio-control/EXECUTION_EVENTS.jsonl
+    report: .portfolio-control/EXECUTION_EFFICIENCY.md
+    handoff: .portfolio-control/CURRENT_HANDOFF.md
+    never_delete_excluded_history: true
 
 orchestrator:
   id: principal-agent
@@ -103,6 +129,7 @@ subagents:
     mission: Choose the concrete stack profile that proves the project claim and benchmark.
     reads:
       - decision-brain/stack-matrix.yaml
+      - decision-brain/jvm-language-matrix.yaml
       - catalog/proficiency.yaml
       - language-profiles/*.yaml
     writes:
@@ -170,6 +197,7 @@ subagents:
     reads:
       - metrics/registry.yaml
       - contracts/benchmark-result.schema.json
+      - contracts/benchmark-result-v2.schema.json
       - harness/bench.py
     writes:
       - sdd/benchmark-plan.md
@@ -237,6 +265,29 @@ subagents:
       - README-has-number-and-result
       - references-complete
       - no-forbidden-legacy-naming
+
+execution_efficiency:
+  preflight:
+    - writable-scope
+    - required-tools
+    - clean-worktree
+    - dependency-and-runtime-availability
+  delegation:
+    heavy_agent_limit: 4
+    pilot_before_fanout: true
+    external_workspace_agents: read-only
+    max_wait_before_progress_check_seconds: 60
+    no_progress_observations_before_takeover: 2
+  expensive_work:
+    static-and-targeted-tests-before-docker: true
+    benchmark_calibration_fraction: 0.01
+    finalize_defaults_before_full_build: true
+  telemetry:
+    schema: contracts/execution-event.schema.json
+    log: .portfolio-control/EXECUTION_EVENTS.jsonl
+    report: .portfolio-control/EXECUTION_EFFICIENCY.md
+    handoff: .portfolio-control/CURRENT_HANDOFF.md
+    never_delete_excluded_history: true
 
 edges:
   - from: user

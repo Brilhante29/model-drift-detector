@@ -1,27 +1,44 @@
 import math
+from datetime import UTC, datetime
 
 import pytest
 
 from model_drift.domain import (
     AlarmPolicy,
+    BatchIdentity,
     ColumnStatistic,
     MonitoringBatch,
 )
+
+
+def identity(name="batch", captured_at=datetime(2026, 1, 1, tzinfo=UTC)):
+    return BatchIdentity(
+        producer_project="producer",
+        producer_version="1",
+        dataset_id="dataset",
+        dataset_version=name,
+        contract_id="contract",
+        contract_digest="sha256:" + "1" * 64,
+        validated_manifest_digest="sha256:" + "2" * 64,
+        model_id="model",
+        model_version="1",
+        model_artifact_digest="sha256:" + "3" * 64,
+        captured_at=captured_at,
+        artifact_digest="sha256:" + ("4" if name == "batch" else "5") * 64,
+        feature_schema_digest="sha256:" + "6" * 64,
+    )
 
 
 def batch(values=None, roles=None):
     return MonitoringBatch(
         batch_id="batch",
         values=(
-            values
-            if values is not None
-            else {"feature": (0.0, 1.0), "prediction": (0.2, 0.8)}
+            values if values is not None else {"feature": (0.0, 1.0), "prediction": (0.2, 0.8)}
         ),
         roles=(
-            roles
-            if roles is not None
-            else {"feature": "feature", "prediction": "prediction"}
+            roles if roles is not None else {"feature": "feature", "prediction": "prediction"}
         ),
+        identity=identity(),
     )
 
 
@@ -31,6 +48,18 @@ def test_monitoring_batch_is_immutable_and_reports_rows():
     assert result.row_count == 2
     with pytest.raises(TypeError):
         result.values["other"] = (1.0,)
+
+
+def test_batch_identity_rejects_naive_time_and_invalid_digest():
+    with pytest.raises(ValueError, match="timezone-aware"):
+        identity(captured_at=datetime(2026, 1, 1))
+    with pytest.raises(ValueError, match="sha256"):
+        BatchIdentity(
+            **{
+                **identity().__dict__,
+                "contract_digest": "invalid",
+            }
+        )
 
 
 @pytest.mark.parametrize(

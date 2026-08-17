@@ -1,0 +1,4 @@
+interface:
+  display_name: "Python Computer Vision"
+  short_description: "Build reproducible CV training and serving evidence"
+  default_prompt: "Use the Python computer vision profile to design and validate this repository."

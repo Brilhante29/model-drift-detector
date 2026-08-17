@@ -1,5 +1,7 @@
 version: 1
 principle: "Pick the stack that best proves the problem, benchmark, and public proficiency signal. Never choose by language name alone."
+jvm_language_decision: decision-brain/jvm-language-matrix.yaml
+kafka_streams_decision: decision-brain/kafka-streams-matrix.yaml
 required_decision_fields:
   - problem_forces
   - public_signal
@@ -46,6 +48,69 @@ profiles:
       - p99_latency_ms
       - coverage_percent
       - transaction_consistency_rate
+  java-spring-backend:
+    public_signal: "modern Java enterprise backend with explicit contracts, transactions, failure semantics, and measurable runtime behavior"
+    use_when:
+      - Java language proficiency is part of the intended signal
+      - records, sealed interfaces, virtual threads, or stable Java APIs improve the solution
+      - an existing Java domain is stronger than a cosmetic Kotlin conversion
+    core_libraries:
+      - spring-boot
+      - java-toolchain
+      - gradle-kotlin-dsl
+      - spring-webmvc
+      - spring-data-jdbc_or_jpa_by_problem
+      - flyway
+      - postgresql
+      - testcontainers
+      - junit5
+      - assertj
+      - micrometer
+      - spring-boot-actuator
+    benchmark_fit:
+      - p95_latency_ms
+      - p99_latency_ms
+      - transaction_consistency_rate
+      - recovery_time_ms
+  kotlin-jvm:
+    public_signal: "Kotlin/JVM domain, CLI, library, or stream processing without artificial Spring dependencies"
+    use_when:
+      - Kotlin language features reduce domain risk or make a state machine exhaustive
+      - the repository has no HTTP, DI, transaction, or framework behavior that justifies Spring
+      - Gradle Wrapper, Kotlin DSL, explicit toolchain, tests, and Docker still apply
+    avoid_when:
+      - Spring transactions, validation, web adapters, or observability are part of the claim
+      - Kotlin is selected only to replace valid Java code cosmetically
+    core_libraries:
+      - kotlin-jvm
+      - gradle-kotlin-dsl
+      - junit5
+      - assertj_or_kotest
+      - ktlint
+    benchmark_fit:
+      - domain_correctness_rate
+      - throughput_or_latency_for_the_actual_problem
+  kafka-streams:
+    public_signal: "Kafka Streams topology with explicit keys, state, failure semantics, local topology tests, and real-broker evidence"
+    use_when:
+      - stream-table joins, windows, repartitioning, state stores, replay, or changelog restoration are central
+      - topology semantics are the claim rather than generic message consumption
+    avoid_when:
+      - a simple consumer loop or work queue solves the problem
+      - only broker presence or resume signaling motivates the dependency
+    core_libraries:
+      - kafka-streams
+      - kafka-streams-test-utils
+      - schema_or_serde_contract
+      - junit5
+      - testcontainers_redpanda_or_kafka
+      - gradle-kotlin-dsl
+    benchmark_fit:
+      - topology_driver_messages_per_second
+      - broker_end_to_end_messages_per_second
+      - consumer_lag_ms
+      - restoration_time_seconds
+      - invalid_record_count
   fastapi-backend:
     public_signal: "Python backend for AI/data products with typed APIs, OpenAPI, async I/O, and Dockerized benchmarks"
     use_when:
@@ -169,20 +234,22 @@ profiles:
     use_when:
       - infrastructure module, AWS baseline, security checks, or provision-time benchmark is the claim
 selection_rules:
+  technical_validity_before_portfolio_signal: "Public proficiency signal may only break a tie between technically valid options; it cannot create a framework, broker, cloud, or language need."
   default_backend_api:
-    prefer: [spring-kotlin-backend, fastapi-backend, go-backend, node-typescript-backend]
+    prefer: [spring-kotlin-backend, java-spring-backend, fastapi-backend, go-backend, node-typescript-backend]
     decide_by:
       domain_transactions: spring-kotlin-backend
+      existing_java_domain_or_java_signal: java-spring-backend
       ai_data_python_ecosystem: fastapi-backend
       low_overhead_networking: go-backend
       typescript_contracts_or_bff: node-typescript-backend
   performance_claim:
-    prefer: [go-backend, spring-kotlin-backend]
+    prefer: [go-backend, spring-kotlin-backend, java-spring-backend]
     note: "Use a benchmark to justify framework choice. Do not claim performance from reputation."
   ml_serving_claim:
     prefer: [fastapi-backend]
     note: "Use Go or JVM only when the project proves serving infrastructure rather than ML workflow."
   enterprise_backend_claim:
-    prefer: [spring-kotlin-backend]
+    prefer: [spring-kotlin-backend, java-spring-backend]
   gateway_or_emulator_claim:
     prefer: [go-backend]

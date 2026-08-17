@@ -1,0 +1,175 @@
+{
+    "id":  28,
+    "name":  "kafka-streams-demo",
+    "program":  {
+                    "id":  "mlops-data-platform",
+                    "narrative_fit":  "Provides reproducible streaming evidence for the data platform.",
+                    "shared_assets":  [
+                                          "benchmark contract"
+                                      ]
+                },
+    "status":  "implemented",
+    "claim":  "Proves deterministic stream-table enrichment and aggregation.",
+    "stack":  [
+                  "kotlin",
+                  "java21",
+                  "kafka-streams",
+                  "docker"
+              ],
+    "language_profile":  {
+                             "primary":  "kotlin-jvm",
+                             "secondary":  [
+
+                                           ],
+                             "reason":  "Kotlin models the topology without requiring Spring."
+                         },
+    "jvm":  {
+                "language":  "kotlin",
+                "framework":  "none",
+                "build":  "gradle-kotlin-dsl",
+                "toolchain_version":  21,
+                "gradle_wrapper_version":  "8.10.2",
+                "wrapper_distribution_sha256":  "0000000000000000000000000000000000000000000000000000000000000000",
+                "interoperability_boundary":  "Serializable domain contracts remain framework-free.",
+                "benchmark_effect":  "Language remains fixed while topology modes are compared.",
+                "rejected_alternatives":  [
+                                              {
+                                                  "option":  "spring",
+                                                  "reason":  "No HTTP or dependency injection behavior is in the claim."
+                                              }
+                                          ]
+            },
+    "messaging_decision":  {
+                               "selected_messaging_mode":  "kafka",
+                               "reason":  "Replayable stateful stream processing is the behavior under test.",
+                               "delivery_guarantee":  "at-least-once baseline",
+                               "ordering_need":  "per customer key",
+                               "replay_need":  "required for restoration",
+                               "retry_dlq_strategy":  "invalid records are quarantined explicitly",
+                               "rejected_alternatives":  [
+                                                             {
+                                                                 "option":  "rabbitmq",
+                                                                 "reason":  "Queue routing does not provide the required stream-table model."
+                                                             }
+                                                         ],
+                               "kafka_streams":  {
+                                                     "processing_mode":  "kafka-streams",
+                                                     "key_strategy":  "customerId",
+                                                     "repartition_strategy":  "rekey before customer aggregation",
+                                                     "serde_contract":  "versioned JSON fixtures",
+                                                     "topology":  "purchase stream joins profile table and aggregates summaries",
+                                                     "state_stores":  [
+                                                                          "customer-summary-store"
+                                                                      ],
+                                                     "processing_guarantee":  "at-least-once",
+                                                     "invalid_record_strategy":  "quarantine and count",
+                                                     "restoration_strategy":  "restore changelog and verify output parity",
+                                                     "benchmark_modes":  [
+                                                                             "topology-test-driver",
+                                                                             "real-broker"
+                                                                         ],
+                                                     "input_topics":  [
+                                                                          "purchases",
+                                                                          "customer-profiles"
+                                                                      ],
+                                                     "output_topics":  [
+                                                                           "customer-summaries",
+                                                                           "invalid-records"
+                                                                       ],
+                                                     "stream_table_join_semantics":  "Purchase stream joins the latest compacted customer profile by customerId.",
+                                                     "window_and_grace_policy":  "No event-time window is used; grace is not applicable to the table join.",
+                                                     "changelog_policy":  "Persistent aggregate state uses a named changelog for broker-backed restoration.",
+                                                     "rebalance_plan":  "Stop one instance, verify reassignment, restoration, lag recovery, and output invariants.",
+                                                     "evidence_plan":  "Use deterministic driver tests and a separate multi-partition real-broker benchmark."
+                                                 }
+                           },
+    "decision_brain":  {
+                           "principles":  {
+                                              "coupling_rule":  "Domain code does not import Kafka or framework types.",
+                                              "solid":  [
+                                                            "srp",
+                                                            "ocp",
+                                                            "lsp",
+                                                            "isp",
+                                                            "dip"
+                                                        ],
+                                              "simplicity_rule":  "Do not add infrastructure outside the measured claim.",
+                                              "testability_rule":  "Topology semantics run without a broker first.",
+                                              "rejected_overengineering":  [
+                                                                               "spring",
+                                                                               "microservices"
+                                                                           ]
+                                          },
+                           "stack_profile":  "kafka-streams",
+                           "api_style":  "cli",
+                           "messaging":  "kafka",
+                           "cloud":  {
+                                         "mode":  "none",
+                                         "local_provider":  "none",
+                                         "real_provider_target":  "none",
+                                         "emulated_services":  [
+
+                                                               ],
+                                         "adapter_rule":  "No cloud adapter exists because no cloud behavior is claimed.",
+                                         "config_switch":  "none",
+                                         "unsupported_behaviors":  [
+
+                                                                   ]
+                                     },
+                           "database":  "none",
+                           "runtime":  "JVM 21",
+                           "library_policy":  "Use only libraries that expose topology behavior and evidence.",
+                           "record_path":  "sdd/technical-decision.md",
+                           "rejected_options":  [
+
+                                                ]
+                       },
+    "architecture":  {
+                         "style":  "event-driven",
+                         "reason":  "Stateful event processing is the direct subject of the repository.",
+                         "problem_forces":  {
+                                                "domain_complexity":  "low",
+                                                "integration_pressure":  "high",
+                                                "ui_state_complexity":  "none",
+                                                "data_or_ml_reproducibility":  "high",
+                                                "auditability":  "medium",
+                                                "throughput_or_async":  "high",
+                                                "independent_deployability":  "low"
+                                            },
+                         "dependency_rule":  "Infrastructure depends inward on domain contracts.",
+                         "boundaries":  [
+                                            "domain",
+                                            "topology",
+                                            "runtime",
+                                            "benchmark"
+                                        ],
+                         "rejected_alternatives":  [
+                                                       {
+                                                           "style":  "microservices",
+                                                           "reason":  "One topology does not justify independent deployment boundaries."
+                                                       }
+                                                   ]
+                     },
+    "design_system":  {
+                          "tokens":  "design-system/tokens.yaml",
+                          "readme_components":  [
+                                                    "readme_header",
+                                                    "benchmark_card"
+                                                ],
+                          "diagram_required":  true
+                      },
+    "benchmark":  {
+                      "primary_metric":  "messages_per_second",
+                      "unit":  "messages/s",
+                      "command":  "./gradlew run",
+                      "result_path":  "benchmarks/results/latest.json",
+                      "evidence_status":  "pending"
+                  },
+    "release":  {
+                    "docker":  "docker build .",
+                    "no_secret_default_path":  true,
+                    "readme_has_number":  true,
+                    "references_documented":  true
+                },
+    "manifest_version":  2
+}
