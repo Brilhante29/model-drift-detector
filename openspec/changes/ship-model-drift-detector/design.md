@@ -27,7 +27,7 @@ manifest + CSV
 - Multiple tests are corrected as one family.
 - Drift remains a proxy without labels.
 - Scenario truth is not available to detector code.
-- Evidence freshness remains pending until Docker is frozen.
+- Evidence is current only while source-locked workload and dependency inputs remain unchanged.
 
 ## Rejected Complexity
 

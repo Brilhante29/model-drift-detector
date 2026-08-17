@@ -21,15 +21,15 @@ Finish #22 as the post-deployment monitoring proof in the MLOps and Data Platfor
 - The runtime, transitive lock, packaged/shared contracts, multi-stage Docker build, strict CI, and V2 producer are implemented.
 - Python 3.12 container verification passes 48 tests at 91.22% coverage; Ruff passes.
 - Monitoring comparisons now preserve and enforce producer, dataset, contract, model artifact, time-order, artifact, and feature-schema identity.
-- Publication evidence and the final GitHub Actions run remain pending at this source checkpoint.
+- Prior evidence was invalidated after the default non-root run exposed a post-`COPY` ownership defect.
+- A corrected source commit, canonical evidence, GitHub publication, exact-SHA Actions verification, and reuse-kit promotion remain.
 
 ## Remaining Verification Order
 
-1. Commit this clean source checkpoint.
-2. Run `tools/benchmark.ps1` for three complete 2,000-row repetitions.
-3. Commit the readable summary and V2 publication artifact.
-4. Set `evidence_status: current`, align README/OpenSpec, and run strict validation.
-5. Push #22, verify exact-SHA GitHub Actions, then promote the monitoring skill and contract gates into the reuse kit.
+1. Commit the readable summary and V2 publication artifact.
+2. Run strict validation and push #22.
+3. Verify GitHub Actions for the exact publication SHA.
+4. Promote the monitoring skill and contract gates into the reuse kit.
 
 ## Known Risks
 

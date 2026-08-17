@@ -4,7 +4,7 @@ One local-first Docker command verifies immutable monitoring batches, detects un
 
 This repository belongs to the MLOps and Data Platform program. Its job is narrow: prove the measurable claim through the selected component pack before adding unrelated infrastructure or features.
 
-The benchmark is the proof. drift_alarm_f1 = pending.  The result is stored in `benchmarks/results/summary.json` and can be reproduced from the Docker/local path.
+The benchmark is the proof. Publication evidence is being regenerated from the corrected non-root default image.
 
 The important architecture decision is pipeline. The dominant force is an ordered evidence flow: verify artifacts, parse batches, compute statistics, correct hypotheses, apply alarm policy, emit telemetry, and score decisions.
 

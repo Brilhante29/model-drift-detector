@@ -21,4 +21,4 @@
 
 ## Remaining Risk
 
-The generated plan is a starting point. Re-run this tool or edit the artifacts when code, benchmark, or architecture decisions change.
+Canonical evidence and GitHub Actions success for the exact publication commit remain.

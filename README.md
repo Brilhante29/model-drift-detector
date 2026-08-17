@@ -1,6 +1,6 @@
 # #22 model-drift-detector
 
-**Benchmark:** publication evidence pending for the source-locked Docker workload.
+**Benchmark:** publication evidence pending after the non-root default-run correction.
 
 **Proves:** an auditable post-deployment monitor can reject tampered batches, distinguish data and prediction drift from model-performance claims, control multiple tests, and score its alarm policy against deterministic scenario truth.
 
@@ -22,7 +22,7 @@ The default command needs no network, secret, paid API, database, broker, or clo
 | Detection p95 | pending | ms | median comparison and policy tail |
 | Blind-spot detection | pending | ratio | documented univariate correlation-only blind spot |
 
-The publication harness requires a clean source commit, builds one image, runs three independent repetitions, preserves every metric sample, and emits both a readable summary and Benchmark Result V2 provenance.
+Publication evidence is regenerated whenever runtime behavior changes. The harness preserves three raw runs plus a source-locked Benchmark Result V2 artifact.
 
 ## What It Monitors
 
@@ -91,7 +91,7 @@ The architecture is a pipeline because ordered evidence transformations dominate
 - Statistical, artifact, policy, telemetry, fixture, and CLI behavior have focused tests.
 - Docker uses a non-root user and a Python base pinned by tag and OCI digest.
 - OpenSpec records intent, architecture self-challenge, reuse delta, benchmark questions, and release verification.
-- Benchmark publication is source locked: the V2 artifact must reference an ancestor commit whose lock and workload remain unchanged.
+- Benchmark evidence remains pending until the corrected default container path and V2 artifact agree.
 
 ## Local Development
 

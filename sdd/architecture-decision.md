@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted for implementation; runtime evidence pending.
+Accepted; publication evidence is being regenerated after a runtime-path correction.
 
 ## Dominant Forces
 

@@ -9,10 +9,10 @@
 
 ## Command
 
-    docker run --rm model-drift-detector
+    ./tools/benchmark.ps1 -Rows 2000 -Repetitions 3 -HardwareClass desktop-docker
 
 ## Evidence
 
-
+The corrected non-root default image must complete three source-locked repetitions.
 
 The README/post number must come from the committed benchmark JSON, not from manual text.

@@ -23,14 +23,14 @@ RUN python -m pip install --no-cache-dir --no-index --find-links=/opt/wheels \
     && mkdir -p /app/benchmarks/results /app/benchmarks/publication \
     && chown -R appuser:appuser /app
 
-COPY src ./src
-COPY tests ./tests
-COPY benchmarks ./benchmarks
-COPY contracts ./contracts
-COPY .portfolio/contracts ./.portfolio/contracts
-COPY tools/aggregate_results.py ./tools/aggregate_results.py
-COPY tools/build_v2_evidence.py ./tools/build_v2_evidence.py
-COPY project.yaml ./
+COPY --chown=appuser:appuser src ./src
+COPY --chown=appuser:appuser tests ./tests
+COPY --chown=appuser:appuser benchmarks ./benchmarks
+COPY --chown=appuser:appuser contracts ./contracts
+COPY --chown=appuser:appuser .portfolio/contracts ./.portfolio/contracts
+COPY --chown=appuser:appuser tools/aggregate_results.py ./tools/aggregate_results.py
+COPY --chown=appuser:appuser tools/build_v2_evidence.py ./tools/build_v2_evidence.py
+COPY --chown=appuser:appuser project.yaml ./
 
 USER appuser
 
