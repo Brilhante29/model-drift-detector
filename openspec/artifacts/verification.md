@@ -16,9 +16,9 @@
 ## Checks
 
 - Component pack selected: `mlops-data-platform`
-- Benchmark line: drift_alarm_f1 = pending
+- Benchmark line: drift_alarm_f1 = 1.0
 - Voice verdict: aligned
 
 ## Remaining Risk
 
-Canonical evidence and GitHub Actions success for the exact publication commit remain.
+GitHub Actions success for the exact publication commit remains the final external gate.

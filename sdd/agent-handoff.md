@@ -21,8 +21,9 @@ Finish #22 as the post-deployment monitoring proof in the MLOps and Data Platfor
 - The runtime, transitive lock, packaged/shared contracts, multi-stage Docker build, strict CI, and V2 producer are implemented.
 - Python 3.12 container verification passes 48 tests at 91.22% coverage; Ruff passes.
 - Monitoring comparisons now preserve and enforce producer, dataset, contract, model artifact, time-order, artifact, and feature-schema identity.
-- Prior evidence was invalidated after the default non-root run exposed a post-`COPY` ownership defect.
-- A corrected source commit, canonical evidence, GitHub publication, exact-SHA Actions verification, and reuse-kit promotion remain.
+- The post-`COPY` ownership defect is fixed; the exact default non-root Docker command passes without a bind mount.
+- Canonical evidence records F1 1.00, FPR 0.00, median p95 35.48 ms, three repetitions, and zero failures from source `12534946`.
+- GitHub publication, exact-SHA Actions verification, and reuse-kit promotion remain.
 
 ## Remaining Verification Order
 

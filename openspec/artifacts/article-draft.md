@@ -1,10 +1,10 @@
-# #22 model-drift-detector: drift_alarm_f1 = pending
+# #22 model-drift-detector: drift_alarm_f1 = 1.0
 
 One local-first Docker command verifies immutable monitoring batches, detects univariate data and prediction drift with Holm-corrected KS evidence plus a minimum effect, and scores alarm F1 and false positives on deterministic labeled scenarios.
 
 This repository belongs to the MLOps and Data Platform program. Its job is narrow: prove the measurable claim through the selected component pack before adding unrelated infrastructure or features.
 
-The benchmark is the proof. Publication evidence is being regenerated from the corrected non-root default image.
+The benchmark is the proof: alarm F1 1.0, false-positive rate 0.0, and median p95 35.48 ms across three source-locked Docker runs. The corrected non-root default command and Benchmark Result V2 evidence agree.
 
 The important architecture decision is pipeline. The dominant force is an ordered evidence flow: verify artifacts, parse batches, compute statistics, correct hypotheses, apply alarm policy, emit telemetry, and score decisions.
 

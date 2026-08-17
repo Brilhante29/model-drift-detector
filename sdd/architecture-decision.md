@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted; publication evidence is being regenerated after a runtime-path correction.
+Accepted and verified by source-locked Docker evidence.
 
 ## Dominant Forces
 

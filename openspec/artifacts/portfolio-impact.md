@@ -26,4 +26,4 @@ This repository is not a standalone demo. It is one part of the MLOps and Data P
 
 ## Post Angle
 
-Open with the regenerated benchmark number, then explain the identity, statistical-policy, non-root runtime, and source-lock boundaries that make the result reproducible.
+Open with drift_alarm_f1 = 1.0 and median p95 = 35.48 ms, then explain the identity, statistical-policy, non-root runtime, and source-lock boundaries that make the result reproducible.

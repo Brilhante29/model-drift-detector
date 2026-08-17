@@ -29,5 +29,6 @@ Guards the model lifecycle from #21 after deployment by turning immutable featur
 
 ## Public Proof
 
-- Benchmark: drift_alarm_f1 = pending
+- Benchmark: drift_alarm_f1 = 1.0
 - Result path: `benchmarks/results/summary.json`
+- Publication path: `benchmarks/publication/model-drift-v2.json`

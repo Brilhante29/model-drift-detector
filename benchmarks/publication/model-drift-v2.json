@@ -1,0 +1,150 @@
+{
+  "benchmark_id": "holm-ks-drift-scenarios",
+  "comparability_key": "model-drift-detector:holm-ks-v1:rows-2000:features-8:scenarios-20:effect-0_1:alpha-0_05",
+  "environment": {
+    "architecture": "x86_64",
+    "container_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.41",
+    "hardware_class": "desktop-docker",
+    "numpy": "2.5.1",
+    "rows_per_batch": 2000,
+    "runtime": "python-3.12.13",
+    "scipy": "1.18.0"
+  },
+  "execution": {
+    "command": "./tools/benchmark.ps1 -Rows 2000 -Repetitions 3",
+    "duration_seconds": 7.788645067994366,
+    "exit_code": 0,
+    "repeat": 3,
+    "started_at": "2026-08-17T04:18:33.820338Z"
+  },
+  "metrics": [
+    {
+      "direction": "higher_is_better",
+      "failures": 0,
+      "name": "drift_alarm_f1",
+      "samples": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "summary": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0
+      },
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "direction": "higher_is_better",
+      "failures": 0,
+      "name": "drift_precision",
+      "samples": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "summary": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0
+      },
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "direction": "higher_is_better",
+      "failures": 0,
+      "name": "drift_recall",
+      "samples": [
+        1.0,
+        1.0,
+        1.0
+      ],
+      "summary": {
+        "max": 1.0,
+        "mean": 1.0,
+        "median": 1.0,
+        "min": 1.0
+      },
+      "unit": "ratio",
+      "value": 1.0
+    },
+    {
+      "direction": "lower_is_better",
+      "failures": 0,
+      "name": "false_positive_rate",
+      "samples": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "summary": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "unit": "ratio",
+      "value": 0.0
+    },
+    {
+      "direction": "lower_is_better",
+      "failures": 0,
+      "name": "detection_runtime_p95_ms",
+      "samples": [
+        32.436215907364385,
+        35.477515344973654,
+        35.58398260429386
+      ],
+      "summary": {
+        "max": 35.58398260429386,
+        "mean": 34.49923795221063,
+        "median": 35.477515344973654,
+        "min": 32.436215907364385
+      },
+      "unit": "milliseconds",
+      "value": 35.477515344973654
+    },
+    {
+      "direction": "target",
+      "failures": 0,
+      "name": "blind_spot_detection_rate",
+      "samples": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "summary": {
+        "max": 0.0,
+        "mean": 0.0,
+        "median": 0.0,
+        "min": 0.0
+      },
+      "unit": "ratio",
+      "value": 0.0
+    }
+  ],
+  "project": "model-drift-detector",
+  "provenance": {
+    "artifact_digest": "sha256:448368c4cea6a39597e8e97111865c5d6712c62c5a5359e746f65e685ae96e77",
+    "clean_tree": true,
+    "dependency_lock_digest": "sha256:1f11155642d136557ddf740a4d27c149ebd621c9e8d8e928cf59ea28b838e149",
+    "image_digest": "sha256:fe60560a0d32b9cb6319cc7de7783b13c0caa93f24b33b95fdd143a8593251ac",
+    "image_ref": "model-drift-detector:benchmark",
+    "producer": "local",
+    "source_commit": "12534946a5a6cb35e10260702d3765bc86b1931a"
+  },
+  "run_id": "09ddaef6-6bd6-4b08-b5b0-2026c42a29c1",
+  "schema_version": 2,
+  "workload": {
+    "concurrency": 1,
+    "config_digest": "sha256:c1afcabf4520dd87fc4f2f3bdb7f7b60793bf34dcb1abf6b1e6dc5501e04a896",
+    "fixture_digest": "sha256:b412010a3de9e8dc0a98292f7a122fb33edb2e98b6e51cbbfdd40edb625c0cf7",
+    "measured_iterations": 20,
+    "version": "drift-scenario-matrix-v1",
+    "warmup_iterations": 1
+  }
+}

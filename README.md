@@ -1,6 +1,6 @@
 # #22 model-drift-detector
 
-**Benchmark:** publication evidence pending after the non-root default-run correction.
+**Benchmark:** `drift_alarm_f1 = 1.00` (median of 3 source-locked Docker runs; image `sha256:fe60560a0d32b9cb6319cc7de7783b13c0caa93f24b33b95fdd143a8593251ac`).
 
 **Proves:** an auditable post-deployment monitor can reject tampered batches, distinguish data and prediction drift from model-performance claims, control multiple tests, and score its alarm policy against deterministic scenario truth.
 
@@ -17,12 +17,12 @@ The default command needs no network, secret, paid API, database, broker, or clo
 
 | Metric | Value | Unit | Meaning |
 |---|---:|---|---|
-| Alarm F1 | pending | ratio | median across 3 pinned-image runs |
-| False-positive rate | pending | ratio | stable scenarios incorrectly alarmed |
-| Detection p95 | pending | ms | median comparison and policy tail |
-| Blind-spot detection | pending | ratio | documented univariate correlation-only blind spot |
+| Alarm F1 | 1.00 | ratio | median across 3 pinned-image runs |
+| False-positive rate | 0.00 | ratio | stable scenarios incorrectly alarmed |
+| Detection p95 | 35.48 | ms | median comparison and policy tail |
+| Blind-spot detection | 0.00 | ratio | documented univariate correlation-only blind spot |
 
-Publication evidence is regenerated whenever runtime behavior changes. The harness preserves three raw runs plus a source-locked Benchmark Result V2 artifact.
+Publication evidence is complete: three independent 2,000-row runs share source commit `12534946`, one immutable image, one fixture digest, and zero failures. Raw runs are `benchmarks/results/run-{1,2,3}.json`; the source-locked result is `benchmarks/publication/model-drift-v2.json`.
 
 ## What It Monitors
 
@@ -91,7 +91,7 @@ The architecture is a pipeline because ordered evidence transformations dominate
 - Statistical, artifact, policy, telemetry, fixture, and CLI behavior have focused tests.
 - Docker uses a non-root user and a Python base pinned by tag and OCI digest.
 - OpenSpec records intent, architecture self-challenge, reuse delta, benchmark questions, and release verification.
-- Benchmark evidence remains pending until the corrected default container path and V2 artifact agree.
+- Benchmark evidence is `current`: V2 provenance locks source, workload, dependency, image, and application-wheel digests while retaining all three metric samples.
 
 ## Local Development
 

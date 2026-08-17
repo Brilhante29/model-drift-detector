@@ -41,7 +41,7 @@ decision_brain:
   reuse_improvement_loop:
     source: .portfolio/decision-brain/reuse-improvement-loop.yaml
     review_path: sdd/reuse-improvement-review.md
-    current_status: patched-awaiting-publication-evidence
+    current_status: runtime-validated
   principles:
     coupling_rule: "Alarm policy imports no SciPy, Evidently, Prometheus, Airflow, MLflow, cloud SDK, transport, database, or UI code; adapters depend inward on immutable domain values and narrow protocols."
     solid: [srp, ocp, lsp, isp, dip]
@@ -150,9 +150,11 @@ benchmark:
   command: "docker run --rm model-drift-detector"
   result_path: benchmarks/results/summary.json
   publication_result_path: benchmarks/publication/model-drift-v2.json
-  evidence_status: pending
+  evidence_status: current
 release:
   docker: "docker run --rm model-drift-detector"
   no_secret_default_path: true
   readme_has_number: true
   references_documented: true
+  evidence_image_id: "sha256:fe60560a0d32b9cb6319cc7de7783b13c0caa93f24b33b95fdd143a8593251ac"
+  evidence_image_size_bytes: 451454845
