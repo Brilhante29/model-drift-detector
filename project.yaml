@@ -9,7 +9,7 @@ program:
     - framework-independent alarm policy
     - Prometheus monitoring metrics
     - drift benchmark result schema
-status: benchmarked
+status: published
 claim: "One local-first Docker command verifies immutable monitoring batches, detects univariate data and prediction drift with Holm-corrected KS evidence plus a minimum effect, and scores alarm F1 and false positives on deterministic labeled scenarios."
 stack:
   - python-3.12
