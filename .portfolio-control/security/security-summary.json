@@ -1,0 +1,22 @@
+{
+  "disposition": "documented",
+  "fixable": 36,
+  "fixable_packages": {
+    "bsdutils": 4,
+    "libblkid1": 4,
+    "liblastlog2-2": 4,
+    "libmount1": 4,
+    "libsmartcols1": 4,
+    "libuuid1": 4,
+    "login": 4,
+    "mount": 4,
+    "util-linux": 4
+  },
+  "generated_at": "2026-08-21T14:38:19.677933Z",
+  "high_critical_total": 53,
+  "image": "model-drift-detector:sec",
+  "no_upstream_fix": 17,
+  "rationale": "Base images are pinned by digest so benchmark provenance stays comparable. Rebuilding does not clear these advisories: the current upstream digest carries the same set. Applying apt-get upgrade would make the image non-deterministic and change image_digest between builds of the same commit, breaking the V2 comparability contract.",
+  "repository": "model-drift-detector",
+  "sbom_packages": 114
+}
